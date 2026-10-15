@@ -26,7 +26,7 @@ Fazer as três mudanças juntas. A etapa 4 é o lugar certo para a foto: o clien
 - Usar **GPT Image 2.5 Sunburst**, opção atual voltada à qualidade, com a captura 3D como imagem de referência.
 - Comparar o resultado com a imagem problemática e verificar apoio no piso, proporções, divisões e materiais. A disponibilidade está confirmada; a melhora visual precisa ser demonstrada pelo teste.
 - Preservar os acabamentos em duas cores, incluindo White Oak / White: carvalho na estrutura e branco nas baguetes.
-- A opção de maior qualidade pode custar mais e demorar mais por foto. Não gerar automaticamente a cada troca de madeira e não prometer o prazo atual de 10–20 segundos sem medir.
+- A opção de maior qualidade pode custar mais e demorar mais por foto. A cada troca de madeira, permitir gerar uma nova imagem mediante clique do usuário; a troca sozinha não inicia a geração. Não prometer o prazo atual de 10–20 segundos sem medir.
 
 ## 3. Mover a geração para a etapa 4
 
