@@ -6,4 +6,16 @@
 // You can pass additional config via defineConfig({ vite: { ... } }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
-export default defineConfig();
+export default defineConfig({
+  vite: {
+    plugins: [{
+      name: "three-canvas-no-dom-tags",
+      enforce: "post",
+      transform(code, id) {
+        if (!/3DView\.tsx(?:\?|$)/.test(id)) return null;
+        // DOM inspection attributes are invalid pierced properties on Three objects.
+        return { code: code.replace(/,?\s*["']data-tsd-source["']\s*:\s*["'][^"']*["'],?/g, ""), map: null };
+      },
+    }],
+  },
+});
