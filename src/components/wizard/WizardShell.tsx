@@ -166,7 +166,7 @@ export function SwatchGrid({ children, cols = 3 }: { children: React.ReactNode; 
         "grid gap-x-3 gap-y-6",
         cols === 2 && "grid-cols-2",
         cols === 3 && "grid-cols-3",
-        cols === 4 && "grid-cols-4",
+        cols === 4 && "grid-cols-2 sm:grid-cols-3 [&>button]:min-w-0 [&>button>div]:w-full [&>button>div]:max-w-28 [&>button>div]:h-auto [&>button>div]:aspect-square",
       )}
     >
       {children}

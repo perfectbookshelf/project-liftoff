@@ -5,6 +5,7 @@ import { OrbitControls, Environment, ContactShadows } from "@react-three/drei"
 import * as THREE from "three"
 import { WOOD_COLORS, useWoodTexture } from "@/lib/wood-textures"
 import { splitFinish } from "@/lib/finish"
+import { PhotoCanvasCapture, type PhotoCapture, type PhotoCaptureOptions } from "./PhotoCanvasCapture"
 
 interface Shelf {
   height: number
@@ -26,7 +27,7 @@ interface Bookshelf3DViewProps {
 }
 
 export interface Bookshelf3DViewRef {
-  captureImage: () => Promise<string>
+  captureImage: (options?: PhotoCaptureOptions) => Promise<string>
 }
 
 const getWoodColor = (finish: string): string => WOOD_COLORS[finish] || WOOD_COLORS.Oak
@@ -466,25 +467,6 @@ function InsideCornerBookshelf3D({
   )
 }
 
-function CanvasCapture({ onReady }: { onReady: (fn: () => Promise<string>) => void }) {
-  const { gl, scene, camera } = useThree()
-
-  useMemo(() => {
-    const captureImage = async (): Promise<string> => {
-      return new Promise((resolve) => {
-        requestAnimationFrame(() => {
-          gl.render(scene, camera)
-          const dataUrl = gl.domElement.toDataURL("image/png")
-          resolve(dataUrl)
-        })
-      })
-    }
-    onReady(captureImage)
-  }, [gl, scene, camera, onReady])
-
-  return null
-}
-
 function CameraController({
   width,
   totalHeight,
@@ -595,12 +577,12 @@ export const Bookshelf3DView = forwardRef<
     return () => timers.forEach(clearTimeout)
   }, [])
 
-  let captureFunction: (() => Promise<string>) | null = null
+  const captureFunction = useRef<PhotoCapture | null>(null)
 
   useImperativeHandle(ref, () => ({
-    captureImage: async () => {
-      if (captureFunction) {
-        return await captureFunction()
+    captureImage: async (options) => {
+      if (captureFunction.current) {
+        return await captureFunction.current(options)
       }
       throw new Error("Canvas not ready")
     },
@@ -638,9 +620,9 @@ export const Bookshelf3DView = forwardRef<
         }}
       >
         <Suspense fallback={null}>
-          <CanvasCapture
+          <PhotoCanvasCapture
             onReady={(fn) => {
-              captureFunction = fn
+              captureFunction.current = fn
             }}
           />
 
@@ -690,7 +672,7 @@ export const Bookshelf3DView = forwardRef<
               modules2={modules2}
             />
           ) : (
-            <group position={[0, totalHeight * 0.16, 0]}>
+            <group name="photo-furniture" position={[0, totalHeight * 0.16, 0]}>
               <Bookshelf3D
                 style={style}
                 width={width}

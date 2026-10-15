@@ -223,6 +223,18 @@ export function BookshelfConfigurator() {
   const [photoError, setPhotoError] = useState<string | null>(null)
   const [photoOpen, setPhotoOpen] = useState(false)
   const callRenderPhoto = useServerFn(renderPhotoreal)
+  const photoRevision = useRef(0)
+  const photoConfigKey = JSON.stringify({ mainType, selectedFinish, width, width2, shelves, shelves2, cathW, cathH, cathH1, cathDir, cornerVariant, uW1, uW, uW2 })
+  const latestPhotoConfig = useRef(photoConfigKey)
+  latestPhotoConfig.current = photoConfigKey
+  useEffect(() => {
+    photoRevision.current += 1
+    setPhotoUrl(null)
+    setPhotoError(null)
+    setPhotoStatus("idle")
+    setPhotoOpen(false)
+  }, [photoConfigKey])
+  useEffect(() => () => { photoRevision.current += 1 }, [])
 
   // Step 1 sub-variant flow (Corner / Cathedral): track whether the user has
   // explicitly confirmed a sub-variant. If they reload with saved state we
@@ -783,6 +795,43 @@ export function BookshelfConfigurator() {
     ),
   }
 
+  const handleGeneratePhoto = async () => {
+    if (!isPhotoRenderType(mainType) || photoStatus === "loading") return
+    const revision = ++photoRevision.current
+    const requestKey = photoConfigKey
+    const activeRef =
+      mainType === "cathedral" ? cathedral3DRef.current : bookshelf3DRef.current
+    if (!activeRef) return
+    setPhotoStatus("loading")
+    setPhotoError(null)
+    setPhotoUrl(null)
+    setPhotoOpen(true)
+    try {
+      const snapshot = await activeRef.captureImage({ grounded: true })
+      if (revision !== photoRevision.current || requestKey !== latestPhotoConfig.current) return
+      const dims =
+        mainType === "cathedral"
+          ? `${toFraction(cathW)} × ${toFraction(cathH)}–${toFraction(cathH1)}`
+          : `${toFraction(width)} × ${toFraction(totalHeight)}`
+      const res = await callRenderPhoto({
+        data: {
+          imageDataUrl: snapshot,
+          finishLabel: finishOption?.label ?? selectedFinish,
+          finishId: selectedFinish,
+          typeLabel: activeType.label,
+          dimensions: dims,
+        },
+      })
+      if (revision !== photoRevision.current || requestKey !== latestPhotoConfig.current) return
+      setPhotoUrl(res.imageDataUrl)
+      setPhotoStatus("done")
+    } catch (e) {
+      if (revision !== photoRevision.current || requestKey !== latestPhotoConfig.current) return
+      setPhotoError(e instanceof Error ? e.message : "Something went wrong")
+      setPhotoStatus("error")
+    }
+  }
+
   const finishStep: WizardStep = {
     label: "Finish",
     selectionName: finishOption?.label ?? "—",
@@ -790,6 +839,7 @@ export function BookshelfConfigurator() {
     description: finishOption?.description ?? "Choose your wood and color combination. The pair (front / interior) is shown on each swatch.",
     nextLabel: "Review",
     content: (
+      <div className="space-y-6">
       <SwatchGrid cols={4}>
         {FINISH_OPTIONS.map(f => (
           <Swatch
@@ -816,39 +866,42 @@ export function BookshelfConfigurator() {
           </Swatch>
         ))}
       </SwatchGrid>
+        {isPhotoRenderType(mainType) && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleGeneratePhoto}
+            disabled={photoStatus === "loading"}
+            aria-label="Generate AI photo render of your bookshelf"
+            className="h-auto whitespace-normal rounded-none w-full text-left border border-border bg-muted/10 p-4 flex items-start gap-4 transition-colors hover:bg-muted/20 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <div className="hidden sm:flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-foreground text-background pointer-events-none">
+              <Sparkles className="h-4 w-4" />
+            </div>
+            <div className="flex-1 min-w-0 pointer-events-none">
+              <div className="text-[11px] tracking-[0.25em] uppercase text-muted-foreground">AI Photo Render</div>
+              <div className="text-sm mt-1 leading-relaxed">
+                Your bookshelf · {finishOption?.label}
+              </div>
+              <div className="mt-3 inline-flex items-center gap-2 text-[11px] tracking-[0.2em] uppercase font-semibold text-foreground">
+                {photoStatus === "loading" ? (
+                  <><Loader2 className="h-3 w-3 animate-spin" /> Rendering…</>
+                ) : (
+                  <><Sparkles className="h-3 w-3" /> {photoUrl ? "Generate new photo →" : "Generate photo →"}</>
+                )}
+              </div>
+            </div>
+          </Button>
+        )}
+        {isPhotoRenderType(mainType) && photoUrl && (
+          <Button variant="ghost" className="w-full h-auto p-0" onClick={() => setPhotoOpen(true)} aria-label="View generated photo">
+            <img src={photoUrl} alt="Your generated bookshelf photo" className="w-full aspect-[4/3] object-contain" />
+          </Button>
+        )}
+      </div>
     ),
   }
 
-  const handleGeneratePhoto = async () => {
-    if (!isPhotoRenderType(mainType)) return
-    const activeRef =
-      mainType === "cathedral" ? cathedral3DRef.current : bookshelf3DRef.current
-    if (!activeRef) return
-    setPhotoStatus("loading")
-    setPhotoError(null)
-    setPhotoUrl(null)
-    setPhotoOpen(true)
-    try {
-      const snapshot = await activeRef.captureImage()
-      const dims =
-        mainType === "cathedral"
-          ? `${toFraction(cathW)} × ${toFraction(cathH)}–${toFraction(cathH1)}`
-          : `${toFraction(width)} × ${toFraction(totalHeight)}`
-      const res = await callRenderPhoto({
-        data: {
-          imageDataUrl: snapshot,
-          finishLabel: finishOption?.label ?? selectedFinish,
-          typeLabel: activeType.label,
-          dimensions: dims,
-        },
-      })
-      setPhotoUrl(res.imageDataUrl)
-      setPhotoStatus("done")
-    } catch (e) {
-      setPhotoError(e instanceof Error ? e.message : "Something went wrong")
-      setPhotoStatus("error")
-    }
-  }
 
   const reviewStep: WizardStep = {
     label: "Review",
@@ -887,32 +940,6 @@ export function BookshelfConfigurator() {
           <SummaryRow label="Shelves" value={`${shelves.length}${mainType === "corner" ? ` + ${shelves2.length}` : ""}`} />
         </div>
 
-        {isPhotoRenderType(mainType) && (
-          <button
-            type="button"
-            onClick={handleGeneratePhoto}
-            disabled={photoStatus === "loading"}
-            aria-label="Generate AI photo render of your bookshelf"
-            className="w-full text-left border border-border bg-muted/10 p-4 flex items-start gap-4 transition-colors hover:bg-muted/20 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <div className="hidden sm:flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-foreground text-background pointer-events-none">
-              <Sparkles className="h-4 w-4" />
-            </div>
-            <div className="flex-1 min-w-0 pointer-events-none">
-              <div className="text-[11px] tracking-[0.25em] uppercase text-muted-foreground">AI Photo Render</div>
-              <div className="text-sm mt-1 leading-relaxed">
-                See your configuration as a photorealistic image with real wood grain — perfect for sharing with your space.
-              </div>
-              <div className="mt-3 inline-flex items-center gap-2 text-[11px] tracking-[0.2em] uppercase font-semibold text-foreground">
-                {photoStatus === "loading" ? (
-                  <><Loader2 className="h-3 w-3 animate-spin" /> Rendering…</>
-                ) : (
-                  <><Sparkles className="h-3 w-3" /> Generate photo →</>
-                )}
-              </div>
-            </div>
-          </button>
-        )}
         <div className="border-y border-border py-5 space-y-2">
           {appliedDiscount && (
             <>
@@ -1102,7 +1129,7 @@ export function BookshelfConfigurator() {
         }}
       />
       {photoOpen && (
-        <div className="fixed inset-0 z-[100] bg-black/85 flex items-center justify-center p-4 sm:p-8" onClick={() => setPhotoOpen(false)}>
+        <div className="fixed inset-0 z-[100] bg-foreground/85 flex items-center justify-center p-4 sm:p-8" onClick={() => setPhotoOpen(false)}>
           <div className="relative max-w-4xl w-full max-h-full flex flex-col items-center gap-4" onClick={(e) => e.stopPropagation()}>
             <button
               type="button"
@@ -1117,7 +1144,7 @@ export function BookshelfConfigurator() {
                 <div className="flex flex-col items-center gap-3 text-muted-foreground">
                   <Loader2 className="h-8 w-8 animate-spin" />
                   <div className="text-[11px] tracking-[0.25em] uppercase">Rendering photoreal preview…</div>
-                  <div className="text-xs">This usually takes 10–20 seconds</div>
+
                 </div>
               )}
               {photoStatus === "error" && (
@@ -1147,7 +1174,7 @@ export function BookshelfConfigurator() {
                 </button>
               )}
             </div>
-            <div className="text-[10px] tracking-[0.2em] uppercase text-white/50 text-center">
+            <div className="text-[10px] tracking-[0.2em] uppercase text-background/50 text-center">
               AI preview · Actual craftsmanship may vary
             </div>
           </div>
