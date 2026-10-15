@@ -5,8 +5,6 @@ const TITLE = "Perfect-Bookshelf — Custom Bookshelf Designer"
 const DESCRIPTION =
   "Design your own custom bookshelf, cathedral, portal, or U-surround in minutes. Pick wood, finish, and dimensions, then order made-to-measure."
 const URL = "https://create-yours.perfectbookshelf.com/"
-const IMAGE =
-  "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9cb593c8-bf52-403d-aa61-aaf64d265056/id-preview-6948177c--fbfb0bc5-6f44-4dcc-8e74-85731b03f64c.lovable.app-1778547201659.png"
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -16,10 +14,10 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESCRIPTION },
       { property: "og:url", content: URL },
-      { property: "og:image", content: IMAGE },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: TITLE },
       { name: "twitter:description", content: DESCRIPTION },
-      { name: "twitter:image", content: IMAGE },
     ],
     links: [{ rel: "canonical", href: URL }],
     scripts: [
@@ -30,7 +28,6 @@ export const Route = createFileRoute("/")({
           "@type": "Product",
           name: "Bookshelf Designer",
           description: DESCRIPTION,
-          image: IMAGE,
           brand: { "@type": "Brand", name: "Perfect-Bookshelf" },
           url: URL,
         }),

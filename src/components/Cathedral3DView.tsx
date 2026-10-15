@@ -5,9 +5,10 @@ import { OrbitControls, Environment, ContactShadows } from "@react-three/drei"
 import * as THREE from "three"
 import { WOOD_COLORS, useWoodTexture } from "@/lib/wood-textures"
 import { splitFinish } from "@/lib/finish"
+import { PhotoCanvasCapture, type PhotoCapture, type PhotoCaptureOptions } from "./PhotoCanvasCapture"
 
 export interface Cathedral3DViewRef {
-  captureImage: () => Promise<string>
+  captureImage: (options?: PhotoCaptureOptions) => Promise<string>
 }
 
 interface Cathedral3DViewProps {
@@ -158,16 +159,6 @@ function CathedralShelf3D({ rows, modulesPerRow, maxWidth, internalFinish, frame
   return <group>{elements}</group>
 }
 
-function CanvasCapture({ onReady }: { onReady: (fn: () => Promise<string>) => void }) {
-  const { gl, scene, camera } = useThree()
-  useMemo(() => {
-    onReady(async () => new Promise((resolve) => {
-      requestAnimationFrame(() => { gl.render(scene, camera); resolve(gl.domElement.toDataURL("image/png")) })
-    }))
-  }, [gl, scene, camera, onReady])
-  return null
-}
-
 function CameraController({ width, totalHeight, maxDepth, isMobile, resetKey }: {
   width: number; totalHeight: number; maxDepth: number; isMobile?: boolean; resetKey: number
 }) {
@@ -223,10 +214,10 @@ export const Cathedral3DView = forwardRef<Cathedral3DViewRef, Cathedral3DViewPro
       return () => timers.forEach(clearTimeout)
     }, [])
 
-    let captureFunction: (() => Promise<string>) | null = null
+    const captureFunction = useRef<PhotoCapture | null>(null)
     useImperativeHandle(ref, () => ({
-      captureImage: async () => {
-        if (captureFunction) return await captureFunction()
+      captureImage: async (options) => {
+        if (captureFunction.current) return await captureFunction.current(options)
         throw new Error("Canvas not ready")
       },
     }))
@@ -249,7 +240,7 @@ export const Cathedral3DView = forwardRef<Cathedral3DViewRef, Cathedral3DViewPro
           gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.0, preserveDrawingBuffer: true }}
         >
           <Suspense fallback={null}>
-            <CanvasCapture onReady={(fn) => { captureFunction = fn }} />
+            <PhotoCanvasCapture onReady={(fn) => { captureFunction.current = fn }} />
             <CameraController width={W} totalHeight={totalHeight} maxDepth={maxDepth} isMobile={isMobile} resetKey={resetCount} />
 
             <ambientLight intensity={0.6} />
@@ -258,7 +249,7 @@ export const Cathedral3DView = forwardRef<Cathedral3DViewRef, Cathedral3DViewPro
             <pointLight position={[0, totalHeight * 0.7, maxDepth * 1.5]} intensity={0.8} distance={maxDepth * 4} />
             <pointLight position={[0, totalHeight * 0.5, -maxDepth * 0.3]} intensity={0.7} distance={maxDepth * 3} />
 
-            <group position={[0, totalHeight * 0.16, 0]}>
+            <group name="photo-furniture" position={[0, totalHeight * 0.16, 0]}>
               <CathedralShelf3D
                 rows={rows}
                 modulesPerRow={modulesPerRow}
