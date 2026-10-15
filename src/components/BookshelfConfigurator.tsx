@@ -505,7 +505,7 @@ export function BookshelfConfigurator() {
           {TYPE_OPTIONS.map(t => (
             <Swatch key={t.id} label={t.label} selected={mainType === t.id} onClick={() => setMainType(t.id)}>
               <div className="absolute inset-0 flex items-center justify-center bg-secondary/40">
-                <img src={t.icon} alt={t.label} className="h-12 w-12 object-contain" />
+                <img src={t.icon} alt={t.label} className="h-16 w-16 object-contain" />
               </div>
             </Swatch>
           ))}
@@ -537,13 +537,13 @@ export function BookshelfConfigurator() {
                     key={v}
                     onClick={() => { setCornerVariant(v); setSubVariantConfirmed(true) }}
                     className={cn(
-                      "flex flex-col items-center gap-2 p-4 transition-all",
+                      "flex flex-col items-center gap-2 p-5 transition-all",
                       cornerVariant === v && subVariantConfirmed
                         ? "border border-brand-walnut text-foreground"
                         : "border border-border text-muted-foreground hover:border-foreground/40",
                     )}
                   >
-                    <span className="text-[11px] tracking-[0.2em] uppercase font-medium">{v === "outside" ? "Outside" : "Inside"} Corner</span>
+                    <span className="text-sm tracking-[0.15em] uppercase font-medium">{v === "outside" ? "Outside" : "Inside"} Corner</span>
                   </button>
                 ))}
               </div>
@@ -557,13 +557,13 @@ export function BookshelfConfigurator() {
                       key={d}
                       onClick={() => { setCathDir(d); setSubVariantConfirmed(true) }}
                       className={cn(
-                        "flex flex-col items-center gap-2 p-4 transition-all",
+                        "flex flex-col items-center gap-2 p-5 transition-all",
                         cathDir === d && subVariantConfirmed
                           ? "border border-brand-walnut text-foreground"
                           : "border border-border text-muted-foreground hover:border-foreground/40",
                       )}
                     >
-                      <span className="text-[11px] tracking-[0.2em] uppercase font-medium">{label}</span>
+                      <span className="text-sm tracking-[0.15em] uppercase font-medium">{label}</span>
                     </button>
                   )
                 })}
