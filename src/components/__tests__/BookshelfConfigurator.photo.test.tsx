@@ -12,7 +12,7 @@ vi.mock("@/components/Bookshelf3DView", async () => {
   }) }
 })
 
-function click(name: string) { fireEvent.click(screen.getByRole("button", { name, exact: true })) }
+function click(name: string) { fireEvent.click(screen.getByRole("button", { name })) }
 async function finish() {
   render(<BookshelfConfigurator />)
   click("Next"); click("Next"); click("See Quote")
@@ -41,7 +41,7 @@ describe("Finish photos", () => {
     expect(mocks.render).toHaveBeenCalledTimes(1)
     click("Review")
     expect(screen.queryByRole("button", { name: "Generate AI photo render of your bookshelf" })).toBeNull()
-    expect(screen.getByRole("button", { name: "Checkout", exact: true })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Checkout" })).toBeInTheDocument()
   })
   it("discards late responses after switching wood even when a new photo has finished", async () => {
     let resolveOld: ((value: { imageDataUrl: string }) => void) | undefined

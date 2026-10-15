@@ -14,7 +14,7 @@ export default defineConfig({
       transform(code, id) {
         if (!/3DView\.tsx(?:\?|$)/.test(id)) return null;
         // DOM inspection attributes are invalid pierced properties on Three objects.
-        return { code: code.replace(/,?\s*["']data-tsd-source["']\s*:\s*["'][^"']*["'],?/g, ""), map: null };
+        return { code: code.replace(/["']data-tsd-source["']\s*:\s*["'][^"']*["']/g, '"data-tsd-source": undefined'), map: null };
       },
     }],
   },
