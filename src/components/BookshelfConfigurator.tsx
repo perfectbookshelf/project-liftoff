@@ -557,13 +557,13 @@ export function BookshelfConfigurator() {
                       key={d}
                       onClick={() => { setCathDir(d); setSubVariantConfirmed(true) }}
                       className={cn(
-                        "flex flex-col items-center gap-2 p-4 transition-all",
+                        "flex flex-col items-center gap-2 p-5 transition-all",
                         cathDir === d && subVariantConfirmed
                           ? "border border-brand-walnut text-foreground"
                           : "border border-border text-muted-foreground hover:border-foreground/40",
                       )}
                     >
-                      <span className="text-[11px] tracking-[0.2em] uppercase font-medium">{label}</span>
+                      <span className="text-sm tracking-[0.15em] uppercase font-medium">{label}</span>
                     </button>
                   )
                 })}
