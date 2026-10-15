@@ -187,7 +187,8 @@ export function BookshelfConfigurator() {
   const [cornerVariant, setCornerVariant] = useState<CornerVariant>(saved.cornerVariant ?? "outside")
   const [width, setWidth] = useState<number>(saved.width ?? defaultWidth)
   const [width2, setWidth2] = useState<number>(saved.width2 ?? 50)
-  const [selectedFinish, setSelectedFinish] = useState<string>(saved.selectedFinish ?? "Oak/Oak")
+  // Finish always starts at White Oak on load/refresh — never restored from saved state.
+  const [selectedFinish, setSelectedFinish] = useState<string>("Oak/Oak")
   const [shelves, setShelves] = useState<ShelfConfig[]>(saved.shelves ?? [
     { height: 14, depth: 14 }, { height: 14, depth: 14 },
     { height: 14, depth: 14 }, { height: 14, depth: 14 },
