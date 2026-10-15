@@ -196,7 +196,7 @@ export function Swatch({ label, selected, disabled, onClick, children, badge }: 
     >
       <div
         className={cn(
-          "relative w-20 h-20 rounded-full overflow-hidden border transition-all",
+          "relative w-28 h-28 rounded-full overflow-hidden border transition-all",
           selected
             ? "border-brand-walnut ring-2 ring-brand-walnut ring-offset-2 ring-offset-background"
             : "border-border group-hover:border-foreground/40",
@@ -204,14 +204,14 @@ export function Swatch({ label, selected, disabled, onClick, children, badge }: 
       >
         {children}
         {badge && (
-          <span className="absolute inset-x-0 bottom-0 bg-foreground/80 text-background text-[8px] font-semibold tracking-wider py-0.5 uppercase">
+          <span className="absolute inset-x-0 bottom-0 bg-foreground/80 text-background text-[10px] font-semibold tracking-wider py-1 uppercase">
             {badge}
           </span>
         )}
       </div>
       <span
         className={cn(
-          "text-[11px] leading-tight tracking-wide max-w-[7rem]",
+          "text-sm leading-tight tracking-wide max-w-[9rem]",
           selected ? "text-foreground font-semibold" : "text-muted-foreground",
         )}
       >
