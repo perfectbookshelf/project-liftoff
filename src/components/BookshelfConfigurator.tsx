@@ -889,11 +889,6 @@ export function BookshelfConfigurator() {
                 ) : (
                   <><Sparkles className="h-3 w-3" /> {photoUrl ? "Generate new photo →" : "Generate photo →"}</>
                 )}
-        {isPhotoRenderType(mainType) && photoUrl && (
-          <Button variant="ghost" className="w-full h-auto p-0" onClick={() => setPhotoOpen(true)} aria-label="View generated photo">
-            <img src={photoUrl} alt="Your generated bookshelf photo" className="w-full aspect-[4/3] object-contain" />
-          </Button>
-        )}
               </div>
             </div>
           </Button>
