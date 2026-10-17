@@ -1,6 +1,6 @@
 /**
  * Screenshot-based visual regression for Steps 2/3/4 of the unified
- * BookshelfConfigurator wizard, for Portal, Cathedral, and U-Surround.
+ * BookshelfConfigurator wizard, for Cathedral and U-Surround.
  *
  * Why pixel screenshots (not the DOM-snapshot test)?
  *   The DOM-snapshot test catches structural regressions (missing fields,
@@ -131,7 +131,7 @@ async function compareOrWriteBaseline(name: string, actualBuf: Buffer) {
   return { wrote: false as const }
 }
 
-describe("Step 2/3/4 screenshot regression — Portal / Cathedral / U-Surround", () => {
+describe("Step 2/3/4 screenshot regression — Cathedral / U-Surround", () => {
   for (const type of TYPES) {
     for (const step of STEPS) {
       it(`${type.label} → ${step.name}`, async () => {
