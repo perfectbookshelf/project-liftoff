@@ -881,7 +881,7 @@ export function BookshelfConfigurator() {
             <div className="flex-1 min-w-0 pointer-events-none">
               <div className="text-[11px] tracking-[0.25em] uppercase text-muted-foreground">AI Photo Render</div>
               <div className="text-sm mt-1 leading-relaxed">
-                Your bookshelf · {finishOption?.label}
+                Your {TYPE_OPTIONS.find((t) => t.id === mainType)?.label ?? "bookshelf"} · {finishOption?.label}
               </div>
               <div className="mt-3 inline-flex items-center gap-2 text-[11px] tracking-[0.2em] uppercase font-semibold text-foreground">
                 {photoStatus === "loading" ? (
