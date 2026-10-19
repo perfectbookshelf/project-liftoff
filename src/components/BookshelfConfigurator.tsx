@@ -90,7 +90,7 @@ const FINISH_OPTIONS = [
     description: "Pale, warm grain with a soft golden undertone. Reads modern and bright.",
   },
   { id: "Oak/White", label: "White Oak / White", price: 91.38, color1: "#D4A574", color2: "#f5f5f5", comingSoon: false,
-    description: "White oak fronts with a clean white interior — graphic, gallery-like contrast.",
+    description: "White sides and shelf boards with natural white oak backs and baguettes.",
   },
   { id: "Maple/Black", label: "Maple / Black", price: 88.01, color1: "#E8D4B8", color2: "#1a1a1a", comingSoon: false, texture2: "/images/finishes/valchromat.png",
     description: "Maple fronts with deep matte-black Valchromat interiors. Theatrical and high-contrast.",
