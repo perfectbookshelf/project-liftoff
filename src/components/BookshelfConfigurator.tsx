@@ -840,32 +840,7 @@ export function BookshelfConfigurator() {
     nextLabel: "Review",
     content: (
       <div className="space-y-6">
-      <SwatchGrid cols={4}>
-        {FINISH_OPTIONS.map(f => (
-          <Swatch
-            key={f.id}
-            label={f.label.replace("/", " / ")}
-            selected={selectedFinish === f.id}
-            disabled={f.comingSoon}
-            onClick={() => !f.comingSoon && setSelectedFinish(f.id)}
-            badge={f.comingSoon ? "Sold out" : undefined}
-          >
-            {f.color1 !== f.color2 ? (
-              <div className="absolute inset-0 flex">
-                <div className="w-1/2 h-full" style={{ backgroundColor: f.color1 }} />
-                <div
-                  className="w-1/2 h-full"
-                  style={f.texture2
-                    ? { backgroundImage: `url(${f.texture2})`, backgroundSize: "cover", backgroundPosition: "center" }
-                    : { backgroundColor: f.color2 }}
-                />
-              </div>
-            ) : (
-              <div className="absolute inset-0" style={{ backgroundColor: f.color1 }} />
-            )}
-          </Swatch>
-        ))}
-      </SwatchGrid>
+
         {isPhotoRenderType(mainType) && (
           <Button
             type="button"
@@ -898,6 +873,32 @@ export function BookshelfConfigurator() {
             <img src={photoUrl} alt="Your generated bookshelf photo" className="w-full aspect-[4/3] object-contain" />
           </Button>
         )}
+      <SwatchGrid cols={4}>
+        {FINISH_OPTIONS.map(f => (
+          <Swatch
+            key={f.id}
+            label={f.label.replace("/", " / ")}
+            selected={selectedFinish === f.id}
+            disabled={f.comingSoon}
+            onClick={() => !f.comingSoon && setSelectedFinish(f.id)}
+            badge={f.comingSoon ? "Sold out" : undefined}
+          >
+            {f.color1 !== f.color2 ? (
+              <div className="absolute inset-0 flex">
+                <div className="w-1/2 h-full" style={{ backgroundColor: f.color1 }} />
+                <div
+                  className="w-1/2 h-full"
+                  style={f.texture2
+                    ? { backgroundImage: `url(${f.texture2})`, backgroundSize: "cover", backgroundPosition: "center" }
+                    : { backgroundColor: f.color2 }}
+                />
+              </div>
+            ) : (
+              <div className="absolute inset-0" style={{ backgroundColor: f.color1 }} />
+            )}
+          </Swatch>
+        ))}
+      </SwatchGrid>
       </div>
     ),
   }
