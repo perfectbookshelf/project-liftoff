@@ -2,6 +2,7 @@
  * Two-tone finish convention: "Wood/Accent".
  * - First part = wood (sides, back, horizontal boards)
  * - Second part = baguette / front accent
+ * Oak/White is the exception: white sides/boards, oak backs/baguettes.
  * Single-tone finishes (no slash) use the same value for everything.
  */
 export interface SplitFinish {
@@ -14,6 +15,9 @@ export function splitFinish(finish: string): SplitFinish {
   const parts = finish.includes("/") ? finish.split("/").map((s) => s.trim()) : null
   if (!parts) {
     return { internalFinish: finish, frameFinish: finish, backFinish: finish }
+  }
+  if (parts[0] === "Oak" && parts[1] === "White") {
+    return { internalFinish: "White", frameFinish: "Oak", backFinish: "Oak" }
   }
   return {
     internalFinish: parts[0],

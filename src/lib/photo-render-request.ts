@@ -1,3 +1,5 @@
+import { splitFinish } from "./finish"
+
 export interface PhotoRenderInput {
   imageDataUrl: string
   finishLabel: string
@@ -11,9 +13,9 @@ export function photoRenderForm(data: PhotoRenderInput): FormData {
   if (!match) throw new Error("Invalid image input")
   const binary = atob(match[2])
   const bytes = Uint8Array.from(binary, char => char.charCodeAt(0))
-  const [structure, front] = (data.finishId || "").split("/")
-  const materials = structure && front
-    ? `Structural shelves, sides and backs: ${structure}. Front vertical baguettes/trim only: ${front}. White Oak means natural white oak wood, NOT white paint. White trim is solid matte white, black trim is solid matte black. Do not reverse these finishes.`
+  const finish = data.finishId ? splitFinish(data.finishId) : null
+  const materials = finish
+    ? `Horizontal boards and shelves, vertical sides: ${finish.internalFinish}. Back panels: ${finish.backFinish}. Front baguettes/trim: ${finish.frameFinish}. Oak means natural white oak wood, NOT white paint. White is solid matte white, Black is solid matte black. Do not reverse these finishes.`
     : `Match the material placement in the reference and the selected finish: ${data.finishLabel}.`
   const form = new FormData()
   form.set("model", "openai/gpt-image-2.5-sunburst")

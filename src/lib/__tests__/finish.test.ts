@@ -26,10 +26,10 @@ describe("splitFinish — two-tone convention", () => {
     })
   })
 
-  it("Oak/White = oak boards/sides/back, white baguettes", () => {
+  it("Oak/White = white boards/sides, oak backs and baguettes", () => {
     expect(splitFinish("Oak/White")).toEqual({
-      internalFinish: "Oak",
-      frameFinish: "White",
+      internalFinish: "White",
+      frameFinish: "Oak",
       backFinish: "Oak",
     })
   })
@@ -52,8 +52,8 @@ describe("splitFinish — two-tone convention", () => {
 
   it("tolerates whitespace around the slash", () => {
     expect(splitFinish("Oak / White")).toEqual({
-      internalFinish: "Oak",
-      frameFinish: "White",
+      internalFinish: "White",
+      frameFinish: "Oak",
       backFinish: "Oak",
     })
   })

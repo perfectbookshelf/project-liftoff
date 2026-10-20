@@ -61,9 +61,10 @@ the root uses `100svh` to stop the scroll bounce.
 ## Two-tone finishes
 
 `src/lib/finish.ts` is the single source of truth for which parts take the wood colour and
-which take the baguette colour. **White has no entry in `src/lib/wood-textures.ts`** on purpose:
-"White Oak / White" means oak structure with white baguettes, never white sides.
-`src/components/__tests__/three-d-views.finish.test.tsx` enforces this for the 3D views.
+which take the baguette colour. "White Oak / White" uses white sides and horizontal
+boards, with natural oak back panels and baguettes. Photo requests use the same split.
+`src/lib/__tests__/finish.test.ts` verifies this placement, while
+`src/components/__tests__/three-d-views.finish.test.tsx` checks role wiring in the 3D views.
 
 ## Backend routes
 
