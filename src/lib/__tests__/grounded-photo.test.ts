@@ -25,4 +25,18 @@ describe("photo reference", () => {
     expect(form.get("image")).toBeInstanceOf(File)
     expect(form.has("response_format")).toBe(false)
   })
+  it("forbids white baguettes for White Oak / White photos", () => {
+    const form = photoRenderForm({ imageDataUrl: "data:image/png;base64,aGk=", finishId: "Oak/White", finishLabel: "White Oak / White", typeLabel: "Bookshelf", dimensions: "70 × 60" })
+    const prompt = String(form.get("prompt"))
+    expect(prompt).toContain("there are NO white baguettes")
+    expect(prompt).toContain("Front baguettes/trim: Oak")
+    expect(prompt).toContain("Horizontal boards and shelves, vertical sides: White")
+    expect(prompt).toContain("Back panels: Oak")
+  })
+  it("preserves white baguettes for the all-white finish", () => {
+    const form = photoRenderForm({ imageDataUrl: "data:image/png;base64,aGk=", finishId: "White/White", finishLabel: "White", typeLabel: "Bookshelf", dimensions: "70 × 60" })
+    const prompt = String(form.get("prompt"))
+    expect(prompt).toContain("Front baguettes/trim: White")
+    expect(prompt).not.toContain("there are NO white baguettes")
+  })
 })
