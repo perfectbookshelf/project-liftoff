@@ -9,24 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ApiPbsCreateCheckoutRouteImport } from './routes/api/pbs-create-checkout'
-import { Route as ApiShopifyValidateCouponRouteImport } from './routes/api/shopify/validate-coupon'
-import { Route as ApiShopifyTestRouteImport } from './routes/api/shopify/test'
-import { Route as ApiShopifyCheckoutRouteImport } from './routes/api/shopify/checkout'
-import { Route as ApiPublicPbsFunnelEventRouteImport } from './routes/api/public/pbs-funnel-event'
-import { Route as ApiPublicPbsCaptureLeadRouteImport } from './routes/api/public/pbs-capture-lead'
 import { Route as ApiPublicPbsBackfillConsentRouteImport } from './routes/api/public/pbs-backfill-consent'
+import { Route as ApiPublicPbsCaptureLeadRouteImport } from './routes/api/public/pbs-capture-lead'
+import { Route as ApiPublicPbsFunnelEventRouteImport } from './routes/api/public/pbs-funnel-event'
+import { Route as ApiShopifyCheckoutRouteImport } from './routes/api/shopify/checkout'
+import { Route as ApiShopifyTestRouteImport } from './routes/api/shopify/test'
+import { Route as ApiShopifyValidateCouponRouteImport } from './routes/api/shopify/validate-coupon'
 
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPbsCreateCheckoutRoute = ApiPbsCreateCheckoutRouteImport.update({
@@ -34,20 +34,15 @@ const ApiPbsCreateCheckoutRoute = ApiPbsCreateCheckoutRouteImport.update({
   path: '/api/pbs-create-checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiShopifyValidateCouponRoute =
-  ApiShopifyValidateCouponRouteImport.update({
-    id: '/api/shopify/validate-coupon',
-    path: '/api/shopify/validate-coupon',
+const ApiPublicPbsBackfillConsentRoute =
+  ApiPublicPbsBackfillConsentRouteImport.update({
+    id: '/api/public/pbs-backfill-consent',
+    path: '/api/public/pbs-backfill-consent',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiShopifyTestRoute = ApiShopifyTestRouteImport.update({
-  id: '/api/shopify/test',
-  path: '/api/shopify/test',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiShopifyCheckoutRoute = ApiShopifyCheckoutRouteImport.update({
-  id: '/api/shopify/checkout',
-  path: '/api/shopify/checkout',
+const ApiPublicPbsCaptureLeadRoute = ApiPublicPbsCaptureLeadRouteImport.update({
+  id: '/api/public/pbs-capture-lead',
+  path: '/api/public/pbs-capture-lead',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicPbsFunnelEventRoute = ApiPublicPbsFunnelEventRouteImport.update({
@@ -55,15 +50,20 @@ const ApiPublicPbsFunnelEventRoute = ApiPublicPbsFunnelEventRouteImport.update({
   path: '/api/public/pbs-funnel-event',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicPbsCaptureLeadRoute = ApiPublicPbsCaptureLeadRouteImport.update({
-  id: '/api/public/pbs-capture-lead',
-  path: '/api/public/pbs-capture-lead',
+const ApiShopifyCheckoutRoute = ApiShopifyCheckoutRouteImport.update({
+  id: '/api/shopify/checkout',
+  path: '/api/shopify/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicPbsBackfillConsentRoute =
-  ApiPublicPbsBackfillConsentRouteImport.update({
-    id: '/api/public/pbs-backfill-consent',
-    path: '/api/public/pbs-backfill-consent',
+const ApiShopifyTestRoute = ApiShopifyTestRouteImport.update({
+  id: '/api/shopify/test',
+  path: '/api/shopify/test',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiShopifyValidateCouponRoute =
+  ApiShopifyValidateCouponRouteImport.update({
+    id: '/api/shopify/validate-coupon',
+    path: '/api/shopify/validate-coupon',
     getParentRoute: () => rootRouteImport,
   } as any)
 
@@ -151,18 +151,18 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/pbs-create-checkout': {
@@ -172,32 +172,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPbsCreateCheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/shopify/validate-coupon': {
-      id: '/api/shopify/validate-coupon'
-      path: '/api/shopify/validate-coupon'
-      fullPath: '/api/shopify/validate-coupon'
-      preLoaderRoute: typeof ApiShopifyValidateCouponRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/shopify/test': {
-      id: '/api/shopify/test'
-      path: '/api/shopify/test'
-      fullPath: '/api/shopify/test'
-      preLoaderRoute: typeof ApiShopifyTestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/shopify/checkout': {
-      id: '/api/shopify/checkout'
-      path: '/api/shopify/checkout'
-      fullPath: '/api/shopify/checkout'
-      preLoaderRoute: typeof ApiShopifyCheckoutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/pbs-funnel-event': {
-      id: '/api/public/pbs-funnel-event'
-      path: '/api/public/pbs-funnel-event'
-      fullPath: '/api/public/pbs-funnel-event'
-      preLoaderRoute: typeof ApiPublicPbsFunnelEventRouteImport
+    '/api/public/pbs-backfill-consent': {
+      id: '/api/public/pbs-backfill-consent'
+      path: '/api/public/pbs-backfill-consent'
+      fullPath: '/api/public/pbs-backfill-consent'
+      preLoaderRoute: typeof ApiPublicPbsBackfillConsentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/pbs-capture-lead': {
@@ -207,11 +186,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPbsCaptureLeadRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/pbs-backfill-consent': {
-      id: '/api/public/pbs-backfill-consent'
-      path: '/api/public/pbs-backfill-consent'
-      fullPath: '/api/public/pbs-backfill-consent'
-      preLoaderRoute: typeof ApiPublicPbsBackfillConsentRouteImport
+    '/api/public/pbs-funnel-event': {
+      id: '/api/public/pbs-funnel-event'
+      path: '/api/public/pbs-funnel-event'
+      fullPath: '/api/public/pbs-funnel-event'
+      preLoaderRoute: typeof ApiPublicPbsFunnelEventRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/shopify/checkout': {
+      id: '/api/shopify/checkout'
+      path: '/api/shopify/checkout'
+      fullPath: '/api/shopify/checkout'
+      preLoaderRoute: typeof ApiShopifyCheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/shopify/test': {
+      id: '/api/shopify/test'
+      path: '/api/shopify/test'
+      fullPath: '/api/shopify/test'
+      preLoaderRoute: typeof ApiShopifyTestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/shopify/validate-coupon': {
+      id: '/api/shopify/validate-coupon'
+      path: '/api/shopify/validate-coupon'
+      fullPath: '/api/shopify/validate-coupon'
+      preLoaderRoute: typeof ApiShopifyValidateCouponRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
