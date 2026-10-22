@@ -111,7 +111,7 @@ export function ReviewCards() {
 /** Review step, next to Checkout: delivery timeline and shipping, from the published policies. */
 export function TrustList({ total }: { total: number }) {
   const freeShipping = total >= STORE_FACTS.freeShippingThreshold
-  const items: { icon: React.ElementType; title: string; detail: string }[] = [
+  const items: { icon: typeof Truck; title: string; detail: string }[] = [
     {
       icon: Hammer,
       title: `Made to order in ${STORE_FACTS.madeIn}`,
