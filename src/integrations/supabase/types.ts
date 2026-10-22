@@ -14,6 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
+      funnel_events: {
+        Row: {
+          click_id_type: string | null
+          created_at: string
+          device: string | null
+          event: string
+          id: number
+          in_iframe: boolean | null
+          product_type: string | null
+          props: Json | null
+          referrer_host: string | null
+          session_id: string
+          step: number | null
+          step_name: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
+        }
+        Insert: {
+          click_id_type?: string | null
+          created_at?: string
+          device?: string | null
+          event: string
+          id?: never
+          in_iframe?: boolean | null
+          product_type?: string | null
+          props?: Json | null
+          referrer_host?: string | null
+          session_id: string
+          step?: number | null
+          step_name?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Update: {
+          click_id_type?: string | null
+          created_at?: string
+          device?: string | null
+          event?: string
+          id?: never
+          in_iframe?: boolean | null
+          product_type?: string | null
+          props?: Json | null
+          referrer_host?: string | null
+          session_id?: string
+          step?: number | null
+          step_name?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Relationships: []
+      }
       quote_leads: {
         Row: {
           created_at: string
@@ -58,7 +118,36 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      funnel_daily: {
+        Row: {
+          day: string | null
+          event: string | null
+          sessions: number | null
+          step: number | null
+          step_name: string | null
+        }
+        Relationships: []
+      }
+      funnel_sessions: {
+        Row: {
+          applied_coupon: boolean | null
+          asked_consultation: boolean | null
+          click_id_type: string | null
+          clicked_checkout: boolean | null
+          device: string | null
+          first_seen: string | null
+          furthest_step: number | null
+          left_email: boolean | null
+          opened_email: boolean | null
+          product_type: string | null
+          reached_checkout: boolean | null
+          session_id: string | null
+          used_preset: boolean | null
+          utm_campaign: string | null
+          utm_source: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
