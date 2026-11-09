@@ -853,7 +853,6 @@ export function BookshelfConfigurator() {
         : mainType === "cathedral"
         ? "Set the wall width and the two heights — the low side (H) and the tall side (H1). Then pick the slope direction."
         : "Set the total width. Heights are determined by the shelves you add in the next step.",
-    notice: priceNotice(1),
     content: (
       <div className="space-y-8">
       {mainType === "usurround" ? (
