@@ -1,3 +1,4 @@
+import { buildOrderProperties } from "@/lib/order-properties"
 import { createFileRoute } from "@tanstack/react-router"
 import { uploadDataUrlToShopifyFiles } from "@/lib/shopify-files.server"
 
@@ -47,20 +48,7 @@ export const Route = createFileRoute("/api/pbs-create-checkout")({
           const shelves = Array.isArray(config?.shelves) ? config.shelves : []
           const shelvesCount = config?.shelvesCount ?? shelves.length
 
-          const properties: Array<{ name: string; value: string }> = [
-            { name: "Width", value: width ? `${width}"` : "Not specified" },
-            { name: "Total Height", value: height ? `${Number(height).toFixed(2)}"` : "Not specified" },
-            { name: "Number of Shelves", value: shelvesCount ? String(shelvesCount) : "0" },
-          ]
-          if (shelves.length > 0) {
-            for (let i = 0; i < shelves.length; i++) {
-              const s = shelves[i]
-              properties.push({ name: `Shelf ${i + 1}`, value: `${s.height}" H x ${s.depth}" D` })
-            }
-          } else {
-            properties.push({ name: "Shelf Configuration", value: "No shelves configured" })
-          }
-          properties.push({ name: "Finish", value: config?.finish || "Not selected" })
+          const { properties, title: orderTitle, summary: orderSummary } = buildOrderProperties(config)
           if (cleanEmail) properties.push({ name: "Quote Email", value: cleanEmail })
 
           const shopName = normalizeShopifyStore(SHOPIFY_STORE)
@@ -138,7 +126,7 @@ export const Route = createFileRoute("/api/pbs-create-checkout")({
             draft_order: {
               line_items: [
                 {
-                  title: "Custom Bookshelf - Configuration",
+                  title: orderTitle,
                   quantity: 1,
                   price: amount.toFixed(2),
                   // Custom (non-variant) line items default to not requiring
@@ -148,7 +136,7 @@ export const Route = createFileRoute("/api/pbs-create-checkout")({
                   properties,
                 },
               ],
-              note: `PBS Configurator | ${config?.finish || "N/A"} | ${width || "?"}" W x ${height || "?"}" H | ${shelvesCount} shelves${appliedDiscount ? ` | Coupon: ${cleanCode}` : ""}`,
+              note: `PBS Configurator | ${orderSummary}${appliedDiscount ? ` | Coupon: ${cleanCode}` : ""}`,
               use_customer_default_address: true,
               ...(appliedDiscount ? { applied_discount: appliedDiscount } : {}),
               // Attaching the email links the draft order to a customer so any

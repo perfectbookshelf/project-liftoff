@@ -570,14 +570,20 @@ export function BookshelfConfigurator() {
     const schematicDataUrl = isLegacyType ? await captureSvgAsPng("[data-pbs-schematic]") : null
 
     const config = {
+      mainType,
       bookshelfType,
+      cornerVariant: mainType === "corner" ? cornerVariant : undefined,
+      width,
+      width2: mainType === "corner" ? width2 : undefined,
+      uSurround: mainType === "usurround" ? { w1: uW1, w: uW, w2: uW2 } : undefined,
+      cathedral: mainType === "cathedral" ? { width: cathW, lowHeight: cathH, highHeight: cathH1, direction: cathDir } : undefined,
       finish: finishLabel,
       totalArea: totalArea.toFixed(2),
       pricePerSqFt: finishOption?.price.toFixed(2) || "0.00",
       totalDimensions: `${toFraction(width)} x ${toFraction(totalHeight)}`,
       dimensions: { width, ...(mainType === "corner" ? { width2 } : {}), height: totalHeight },
       shelves,
-      ...(mainType === "corner" ? { shelves2 } : {}),
+      ...(mainType === "corner" ? { shelves2: cornerVariant === "inside" ? shelves2 : shelves2 } : {}),
       skus: result.allSkus,
     }
 
@@ -773,6 +779,7 @@ export function BookshelfConfigurator() {
             )}
           </div>
         )}
+        {mainType === "bookshelf" && (
         <div className="pt-5 border-t border-border" data-testid="presets">
           <div className="flex items-baseline justify-between mb-3">
             <span className="text-[11px] tracking-[0.2em] uppercase font-semibold text-foreground">
@@ -809,6 +816,7 @@ export function BookshelfConfigurator() {
           </div>
           <p className="text-[11px] text-muted-foreground mt-2">You can change every detail on the next steps.</p>
         </div>
+        )}
       </div>
     ),
   }
