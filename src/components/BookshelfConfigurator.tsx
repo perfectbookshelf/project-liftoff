@@ -665,30 +665,15 @@ export function BookshelfConfigurator() {
         : undefined,
   })
 
-  /* ─── Price estimate / "steps to price" callout (Steps 1–3) ─── */
+  /* ─── "steps to price" hint (Step 1 only — no pricing shown on Steps 2–3) ─── */
 
   const priceNotice = (idx: number): React.ReactNode => {
     const left = PRICE_STEP_INDEX - idx
     if (left <= 0) return undefined
     const stepsLeft = `${left} step${left > 1 ? "s" : ""}`
-    if (idx === 0 || !priceRange) {
-      return (
-        <div className="text-[11px] tracking-[0.15em] uppercase text-muted-foreground" data-testid="price-steps-left">
-          Your price is {stepsLeft} away
-        </div>
-      )
-    }
     return (
-      <div className="border border-brand-walnut/40 bg-secondary/40 px-4 py-3" data-testid="price-estimate">
-        <div className="flex items-baseline justify-between gap-3">
-          <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground">Estimate</span>
-          <span className="font-display text-lg tracking-tight text-foreground whitespace-nowrap">
-            {formatUsd(priceRange.low)} – {formatUsd(priceRange.high)}
-          </span>
-        </div>
-        <p className="text-[11px] text-muted-foreground leading-snug mt-1">
-          Depends on the wood you pick. Exact price in {stepsLeft}, before any discount.
-        </p>
+      <div className="text-[11px] tracking-[0.15em] uppercase text-muted-foreground" data-testid="price-steps-left">
+        Your price is {stepsLeft} away
       </div>
     )
   }
@@ -853,7 +838,6 @@ export function BookshelfConfigurator() {
         : mainType === "cathedral"
         ? "Set the wall width and the two heights — the low side (H) and the tall side (H1). Then pick the slope direction."
         : "Set the total width. Heights are determined by the shelves you add in the next step.",
-    notice: priceNotice(1),
     content: (
       <div className="space-y-8">
       {mainType === "usurround" ? (
@@ -943,7 +927,6 @@ export function BookshelfConfigurator() {
     selectionName: `${typePrefix}${visibleCount} ${shelvesStepUnit}`,
     priceDelta: `${toFraction(shelvesStepHeight)} tall`,
     description: shelvesStepDescription,
-    notice: priceNotice(2),
     nextLabel: "See Quote",
     nextDisabled: !isValidQuoteEmail,
     onNextBlocked: openEmailSheet,

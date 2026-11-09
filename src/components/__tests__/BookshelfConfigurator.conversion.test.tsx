@@ -23,12 +23,6 @@ function clickNext() {
   fireEvent.click(nav!)
 }
 
-function parseRange(text: string): [number, number] {
-  const nums = (text.match(/\$[\d,]+/g) ?? []).map((s) => Number(s.replace(/[$,]/g, "")))
-  expect(nums.length).toBeGreaterThanOrEqual(2)
-  return [nums[0], nums[1]]
-}
-
 describe("BookshelfConfigurator — conversion features", () => {
   it("shows a named progress tracker and marks completed steps", () => {
     render(<BookshelfConfigurator />)
@@ -45,31 +39,32 @@ describe("BookshelfConfigurator — conversion features", () => {
     expect(within(nav).queryByRole("button")).toBeNull()
   })
 
-  it("Step 1 says how far the price is; Step 2 shows an estimate range", () => {
-    render(<BookshelfConfigurator />)
+  it("Step 1 says how far the price is; Steps 2 and 3 show no pricing", () => {
+    const { container } = render(<BookshelfConfigurator />)
     expect(screen.getByTestId("price-steps-left")).toHaveTextContent(/3 steps away/i)
 
+    // Step 2 (Dimensions): no estimate box, no dollar amount anywhere.
     clickNext()
-    const estimate = screen.getByTestId("price-estimate")
-    const [low, high] = parseRange(estimate.textContent ?? "")
-    expect(low).toBeGreaterThan(0)
-    expect(high).toBeGreaterThan(low)
-    expect(low % 50).toBe(0)
-    expect(high % 50).toBe(0)
-    // Never expose square footage or per-square-foot pricing.
-    expect(estimate.textContent).not.toMatch(/sq|ft²|per square/i)
+    expect(screen.queryByTestId("price-estimate")).toBeNull()
+    expect(container.textContent).not.toMatch(/\$\s?\d/)
+
+    // Step 3 (Shelves): still no pricing, even though "See Quote" is the CTA.
+    clickNext()
+    expect(screen.queryByTestId("price-estimate")).toBeNull()
+    expect(container.textContent).not.toMatch(/\$\s?\d/)
   })
 
-  it("the exact price on the Finish step falls inside the earlier estimate", () => {
-    render(<BookshelfConfigurator />)
+  it("the exact price first appears on the Finish step", () => {
+    const { container } = render(<BookshelfConfigurator />)
     clickNext() // → Dimensions
     clickNext() // → Shelves
-    const [low, high] = parseRange(screen.getByTestId("price-estimate").textContent ?? "")
+    expect(container.textContent).not.toMatch(/\$\s?\d/)
     clickNext() // → Finish (email already saved in setup)
     const priceText = screen.getAllByText(/^\$[\d.]+$/)[0].textContent ?? ""
     const exact = Number(priceText.replace("$", ""))
-    expect(exact).toBeGreaterThanOrEqual(low)
-    expect(exact).toBeLessThanOrEqual(high)
+    expect(exact).toBeGreaterThan(0)
+    // Never expose square footage or per-square-foot pricing.
+    expect(container.textContent).not.toMatch(/sq|ft²|per square/i)
   })
 
   it("a preset applies its layout and jumps to Dimensions", () => {
