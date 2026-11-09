@@ -27,7 +27,7 @@ describe("BookshelfConfigurator — conversion features", () => {
   it("shows a named progress tracker and marks completed steps", () => {
     render(<BookshelfConfigurator />)
     const nav = screen.getByRole("navigation", { name: "Progress" })
-    for (const label of ["Type", "Size", "Shelves", "Finish", "Review"]) {
+    for (const label of ["Type", "Size", "Shelves", "Preview", "Review"]) {
       expect(within(nav).getByText(label)).toBeInTheDocument()
     }
     expect(within(nav).queryByRole("button")).toBeNull()
@@ -65,6 +65,19 @@ describe("BookshelfConfigurator — conversion features", () => {
     expect(exact).toBeGreaterThan(0)
     // Never expose square footage or per-square-foot pricing.
     expect(container.textContent).not.toMatch(/sq|ft²|per square/i)
+  })
+
+  it("Step 4 is named Preview and the photo card invites the click", () => {
+    render(<BookshelfConfigurator />)
+    clickNext() // → Dimensions
+    clickNext() // → Shelves
+    clickNext() // → Preview (email already saved in setup)
+    // Both the step header and the progress tracker say Preview; nothing says Finish.
+    expect(screen.getAllByText("Preview").length).toBeGreaterThan(1)
+    expect(screen.queryByText("Finish")).toBeNull()
+    // The word "Preview" is called out in the photo card with a click prompt.
+    expect(screen.getByTestId("preview-word")).toHaveTextContent("Preview")
+    expect(screen.getByText(/click here to see it in a real room/i)).toBeInTheDocument()
   })
 
   it("a preset applies its layout and jumps to Dimensions", () => {

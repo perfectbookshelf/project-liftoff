@@ -1070,7 +1070,7 @@ export function BookshelfConfigurator() {
   }
 
   const finishStep: WizardStep = {
-    label: "Finish",
+    label: "Preview",
     selectionName: finishOption?.label ?? "—",
     priceDelta: `$${totalPrice.toFixed(2)}`,
     description: finishOption?.description ?? "Choose your wood and color combination. The pair (front / interior) is shown on each swatch.",
@@ -1085,15 +1085,26 @@ export function BookshelfConfigurator() {
             onClick={handleGeneratePhoto}
             disabled={photoStatus === "loading"}
             aria-label="Generate AI photo render of your bookshelf"
-            className="h-auto whitespace-normal rounded-none w-full text-left border border-border bg-muted/10 p-4 flex items-start gap-4 transition-colors hover:bg-muted/20 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="h-auto whitespace-normal rounded-none w-full text-left border border-brand-walnut/40 bg-secondary/40 p-4 flex items-start gap-4 transition-colors hover:bg-secondary hover:border-brand-walnut cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <div className="hidden sm:flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-foreground text-background pointer-events-none">
+            <div className="hidden sm:flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-walnut text-brand-walnut-foreground pointer-events-none">
               <Sparkles className="h-4 w-4" />
             </div>
             <div className="flex-1 min-w-0 pointer-events-none">
               <div className="text-[11px] tracking-[0.25em] uppercase text-muted-foreground">AI Photo Render</div>
-              <div className="text-sm mt-1 leading-relaxed">
+              <div className="mt-1.5 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
+                <span
+                  data-testid="preview-word"
+                  className="font-display text-xl sm:text-2xl uppercase tracking-[0.12em] leading-none text-brand-walnut underline decoration-brand-walnut/50 decoration-[3px] underline-offset-4"
+                >
+                  Preview
+                </span>
+                <span className="text-sm text-foreground">it in your home</span>
+              </div>
+              <div className="text-xs mt-2 leading-relaxed text-muted-foreground">
                 Your {TYPE_OPTIONS.find((t) => t.id === mainType)?.label ?? "bookshelf"} · {finishOption?.label}
+                {" — "}
+                <span className="text-foreground">click here to see it in a real room.</span>
               </div>
               <div className="mt-3 inline-flex items-center gap-2 text-[11px] tracking-[0.2em] uppercase font-semibold text-foreground">
                 {photoStatus === "loading" ? (
