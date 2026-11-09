@@ -67,6 +67,19 @@ describe("BookshelfConfigurator — conversion features", () => {
     expect(container.textContent).not.toMatch(/sq|ft²|per square/i)
   })
 
+  it("Step 4 is named Preview and the photo card invites the click", () => {
+    render(<BookshelfConfigurator />)
+    clickNext() // → Dimensions
+    clickNext() // → Shelves
+    clickNext() // → Preview (email already saved in setup)
+    // Both the step header and the progress tracker say Preview; nothing says Finish.
+    expect(screen.getAllByText("Preview").length).toBeGreaterThan(1)
+    expect(screen.queryByText("Finish")).toBeNull()
+    // The word "Preview" is called out in the photo card with a click prompt.
+    expect(screen.getByTestId("preview-word")).toHaveTextContent("Preview")
+    expect(screen.getByText(/click here to see it in a real room/i)).toBeInTheDocument()
+  })
+
   it("a preset applies its layout and jumps to Dimensions", () => {
     render(<BookshelfConfigurator />)
     fireEvent.click(screen.getByRole("button", { name: /start from slim tower/i }))
