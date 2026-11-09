@@ -583,7 +583,7 @@ export function BookshelfConfigurator() {
       totalDimensions: `${toFraction(width)} x ${toFraction(totalHeight)}`,
       dimensions: { width, ...(mainType === "corner" ? { width2 } : {}), height: totalHeight },
       shelves,
-      ...(mainType === "corner" ? { shelves2: cornerVariant === "inside" ? shelves2 : shelves2 } : {}),
+      ...(mainType === "corner" ? { shelves2 } : {}),
       skus: result.allSkus,
     }
 
