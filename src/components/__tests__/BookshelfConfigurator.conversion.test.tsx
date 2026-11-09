@@ -27,7 +27,7 @@ describe("BookshelfConfigurator — conversion features", () => {
   it("shows a named progress tracker and marks completed steps", () => {
     render(<BookshelfConfigurator />)
     const nav = screen.getByRole("navigation", { name: "Progress" })
-    for (const label of ["Type", "Size", "Shelves", "Finish", "Review"]) {
+    for (const label of ["Type", "Size", "Shelves", "Preview", "Review"]) {
       expect(within(nav).getByText(label)).toBeInTheDocument()
     }
     expect(within(nav).queryByRole("button")).toBeNull()
