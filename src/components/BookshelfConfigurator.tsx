@@ -942,7 +942,6 @@ export function BookshelfConfigurator() {
     selectionName: `${typePrefix}${visibleCount} ${shelvesStepUnit}`,
     priceDelta: `${toFraction(shelvesStepHeight)} tall`,
     description: shelvesStepDescription,
-    notice: priceNotice(2),
     nextLabel: "See Quote",
     nextDisabled: !isValidQuoteEmail,
     onNextBlocked: openEmailSheet,
