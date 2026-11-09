@@ -23,12 +23,6 @@ function clickNext() {
   fireEvent.click(nav!)
 }
 
-function parseRange(text: string): [number, number] {
-  const nums = (text.match(/\$[\d,]+/g) ?? []).map((s) => Number(s.replace(/[$,]/g, "")))
-  expect(nums.length).toBeGreaterThanOrEqual(2)
-  return [nums[0], nums[1]]
-}
-
 describe("BookshelfConfigurator — conversion features", () => {
   it("shows a named progress tracker and marks completed steps", () => {
     render(<BookshelfConfigurator />)
