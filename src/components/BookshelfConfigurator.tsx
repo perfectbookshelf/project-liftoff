@@ -238,7 +238,7 @@ export function BookshelfConfigurator() {
   const defaultWidth = 69.75
 
   const [stepIndex, setStepIndex] = useState(0)
-  const [quoteEmail, setQuoteEmailState] = useState<string>(() => loadQuoteEmail())
+  const [quoteEmail, setQuoteEmailState] = useState<string>("")
   const setQuoteEmail = (value: string) => {
     setQuoteEmailState(value)
     saveQuoteEmail(value)
@@ -253,11 +253,9 @@ export function BookshelfConfigurator() {
     setEmailSheetOpen(true)
     track("email_sheet_open", { step: stepIndex, product_type: mainTypeRef.current, pr: SHOW_PRICE_RANGE })
   }
-  const saved = useMemo<any>(() => {
-    const raw = safeGetItem("bookshelf-config")
-    if (!raw) return {}
-    try { return JSON.parse(raw) || {} } catch { return {} }
-  }, [])
+  // Browser storage must not change the first render relative to the server.
+  const [saved, setSaved] = useState<Record<string, any>>({})
+  const [storageRestored, setStorageRestored] = useState(false)
 
   const [mainType, setMainType] = useState<MainType>(
     saved.mainType && saved.mainType !== "portal" ? saved.mainType : "bookshelf",
@@ -361,6 +359,34 @@ export function BookshelfConfigurator() {
   }, [mainType])
 
   useEffect(() => {
+    let restored: Record<string, any> = {}
+    try {
+      const parsed = JSON.parse(safeGetItem("bookshelf-config") ?? "{}")
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) restored = parsed
+    } catch { /* Ignore unreadable saved designs. */ }
+    const restoredType = TYPE_OPTIONS.find((option) => option.id === restored.mainType)?.id ?? "bookshelf"
+    if (restoredType !== "bookshelf") skipShelfResetRef.current = true
+    setMainType(restoredType)
+    setCornerVariant(restored.cornerVariant ?? "outside")
+    setWidth(restored.width ?? defaultWidth)
+    setWidth2(restored.width2 ?? 50)
+    if (Array.isArray(restored.shelves) && restored.shelves.length) setShelves(restored.shelves)
+    if (Array.isArray(restored.shelves2) && restored.shelves2.length) setShelves2(restored.shelves2)
+    setUW1(restored.uW1 ?? 50)
+    setUW(restored.uW ?? 70)
+    setUW2(restored.uW2 ?? 50)
+    setCathW(restored.cathW ?? 100)
+    setCathH(restored.cathH ?? 60)
+    setCathH1(restored.cathH1 ?? 96)
+    setCathDir(restored.cathDir ?? "left")
+    setSubVariantConfirmed(!!restored.mainType)
+    setQuoteEmailState(loadQuoteEmail())
+    setSaved(restored)
+    setStorageRestored(true)
+  }, [])
+
+  useEffect(() => {
+    if (!storageRestored) return
     safeSetItem("bookshelf-config", JSON.stringify({
       mainType, cornerVariant, width, width2, selectedFinish, shelves, shelves2,
       uW1, uW, uW2,
@@ -369,7 +395,7 @@ export function BookshelfConfigurator() {
     setCheckoutError(null)
     setReadyCheckoutUrl(null)
   }, [mainType, cornerVariant, width, width2, selectedFinish, shelves, shelves2,
-      uW1, uW, uW2, cathW, cathH, cathH1, cathDir])
+      uW1, uW, uW2, cathW, cathH, cathH1, cathDir, storageRestored])
 
   useEffect(() => {
     const check = () => setIsMobileDevice(window.innerWidth < 768)
@@ -453,9 +479,10 @@ export function BookshelfConfigurator() {
 
   const STEP_NAMES = ["type", "dimensions", "shelves", "finish", "review"] as const
   useEffect(() => {
+    if (!storageRestored) return
     track("wizard_view", { pr: SHOW_PRICE_RANGE, returning: !!saved.mainType })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [storageRestored])
   useEffect(() => {
     track("step_view", {
       step: stepIndex,
