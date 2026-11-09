@@ -1,6 +1,7 @@
 import { Suspense, useMemo, useImperativeHandle, forwardRef, useEffect, useRef, useState } from "react"
 import { Canvas, useThree } from "@react-three/fiber"
-import { OrbitControls, Environment, ContactShadows } from "@react-three/drei"
+import { OrbitControls, ContactShadows } from "@react-three/drei"
+import { OptionalStudioEnvironment } from "./OptionalStudioEnvironment"
 import * as THREE from "three"
 import { Bookshelf3D } from "./Bookshelf3DView"
 import { splitFinish } from "@/lib/finish"
@@ -147,7 +148,7 @@ export const USurround3DView = forwardRef<USurround3DViewRef, USurround3DViewPro
             <directionalLight position={[-10, 10, -8]} intensity={0.4} />
             <pointLight position={[0, totalHeight * 0.7, maxDepth * 1.5]} intensity={0.8} distance={maxDepth * 4} />
             <USurroundScene props={props} intF={intF} frameF={frameF} backF={backF} />
-            <Environment preset="studio" environmentIntensity={0.5} />
+            <OptionalStudioEnvironment />
             <ContactShadows position={[0, -0.1, 0]} opacity={0.3} scale={spread * 1.2} blur={2.8} far={totalHeight * 1.5} resolution={1024} />
             <OrbitControls enableZoom enablePan enableRotate minDistance={20} maxDistance={500} target={[0, totalHeight / 2, 0]} enableDamping dampingFactor={0.05} rotateSpeed={0.5} zoomSpeed={0.5} />
           </Suspense>

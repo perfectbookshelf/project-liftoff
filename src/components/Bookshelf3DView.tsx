@@ -1,7 +1,8 @@
 import * as React from "react"
 import { Suspense, useMemo, useImperativeHandle, forwardRef, useEffect, useRef, useState } from "react"
 import { Canvas, useThree } from "@react-three/fiber"
-import { OrbitControls, Environment, ContactShadows } from "@react-three/drei"
+import { OrbitControls, ContactShadows } from "@react-three/drei"
+import { OptionalStudioEnvironment } from "./OptionalStudioEnvironment"
 import * as THREE from "three"
 import { WOOD_COLORS, useWoodTexture } from "@/lib/wood-textures"
 import { splitFinish } from "@/lib/finish"
@@ -685,7 +686,7 @@ export const Bookshelf3DView = forwardRef<
             </group>
           )}
 
-          <Environment preset="studio" environmentIntensity={0.5} />
+          <OptionalStudioEnvironment />
           <ContactShadows
             position={[0, -0.1, 0]}
             opacity={0.3}
