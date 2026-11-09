@@ -116,7 +116,7 @@ export function WizardShell({
                   onClick={goPrev}
                   disabled={safeIndex === 0}
                   className={cn(
-                    "justify-self-start inline-flex items-center gap-1.5 rounded-full border border-foreground/30 bg-background px-3.5 py-2.5 text-[11px] sm:text-xs tracking-[0.18em] font-semibold uppercase text-foreground hover:border-foreground hover:bg-secondary active:translate-y-px transition-colors disabled:opacity-30 disabled:cursor-not-allowed",
+                    "justify-self-start inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-foreground/30 bg-background px-3.5 py-2.5 text-[11px] sm:text-xs tracking-[0.18em] font-semibold uppercase text-foreground hover:border-foreground hover:bg-secondary active:translate-y-px transition-colors disabled:opacity-30 disabled:cursor-not-allowed",
                     safeIndex === 0 && "invisible",
                   )}
                 >
@@ -138,7 +138,7 @@ export function WizardShell({
                   disabled={safeIndex === total - 1 || (step.nextDisabled && !step.onNextBlocked)}
                   aria-disabled={step.nextDisabled || undefined}
                   className={cn(
-                    "justify-self-end inline-flex items-center gap-1.5 rounded-full px-4 sm:px-5 py-2.5 text-[11px] sm:text-xs tracking-[0.18em] font-semibold uppercase active:translate-y-px transition-colors disabled:opacity-30 disabled:cursor-not-allowed",
+                    "justify-self-end inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-4 sm:px-5 py-2.5 text-[11px] sm:text-xs tracking-[0.18em] font-semibold uppercase active:translate-y-px transition-colors disabled:opacity-30 disabled:cursor-not-allowed",
                     // Blocked-but-clickable (e.g. needs an email first) stays fully
                     // visible so the shopper knows to press it.
                     step.nextDisabled && step.onNextBlocked
