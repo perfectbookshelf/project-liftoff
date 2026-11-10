@@ -1,6 +1,26 @@
-// Local-only fill lighting. The previous drei "studio" preset downloaded an
-// HDR from an external CDN (githack), which is slow/blocked on iOS and could
-// leave the 3D blank. No network request is made here.
+import { Component, Suspense, type ReactNode } from "react"
+import { Environment } from "@react-three/drei"
+
+// Lighting enhancement must never hide the furniture while downloading,
+// or unmount the configurator when the external HDR host is unavailable.
+class LightingBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false }
+
+  static getDerivedStateFromError() {
+    return { failed: true }
+  }
+
+  render() {
+    return this.state.failed ? null : this.props.children
+  }
+}
+
 export function OptionalStudioEnvironment() {
-  return <hemisphereLight args={["#ffffff", "#d9cbb8", 0.6]} />
+  return (
+    <LightingBoundary>
+      <Suspense fallback={null}>
+        <Environment preset="studio" environmentIntensity={0.5} />
+      </Suspense>
+    </LightingBoundary>
+  )
 }

@@ -608,7 +608,6 @@ export const Bookshelf3DView = forwardRef<
       }
     >
       <Canvas
-          dpr={[1, 1.5]}
         camera={{
           position: [0, totalHeight * 0.5, cameraDistance],
           fov: 60,
@@ -635,8 +634,8 @@ export const Bookshelf3DView = forwardRef<
             position={[15, 20, 10]}
             intensity={1.2}
             castShadow
-            shadow-mapSize-width={1024}
-            shadow-mapSize-height={1024}
+            shadow-mapSize-width={4096}
+            shadow-mapSize-height={4096}
             shadow-bias={-0.00001}
             shadow-camera-left={-width}
             shadow-camera-right={width}
@@ -694,7 +693,7 @@ export const Bookshelf3DView = forwardRef<
             scale={width * 1.8}
             blur={2.8}
             far={totalHeight * 1.5}
-            resolution={256}
+            resolution={1024}
           />
 
           <OrbitControls

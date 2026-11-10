@@ -22,10 +22,6 @@ export const WOOD_TEXTURE_URLS: Record<string, string> = {
   Black: "/textures/black.jpg",
 }
 
-// Shared clones: boards with the same size/seed reuse one texture instead of
-// one copy per board (hundreds of copies exhausted iPhone GPU memory).
-const CLONE_CACHE = new Map<string, THREE.Texture>()
-
 export const ALL_TEXTURE_URLS = Object.values(WOOD_TEXTURE_URLS)
 
 // Preload all wood textures once on module import so they're cached
@@ -48,20 +44,15 @@ export function useWoodTexture(
 
   return useMemo(() => {
     if (!url) return null
-    const u = Math.round(Math.max(0.5, (size.w ?? size.d ?? 30) / 30) * 2) / 2
-    const v = Math.round(Math.max(0.5, (size.h ?? size.d ?? 30) / 30) * 2) / 2
-    const seed = Math.abs(randomSeed) % 4
-    const key = `${url}|${u}|${v}|${seed}`
-    const cached = CLONE_CACHE.get(key)
-    if (cached && cached.source === texture.source) return cached
     const t = texture.clone()
     t.wrapS = t.wrapT = THREE.RepeatWrapping
+    const u = Math.max(0.5, (size.w ?? size.d ?? 30) / 30)
+    const v = Math.max(0.5, (size.h ?? size.d ?? 30) / 30)
     t.repeat.set(u, v)
-    const offX = (seed * 0.17) % 1
-    const offY = (seed * 0.23) % 1
+    const offX = (Math.abs(randomSeed) * 0.17) % 1
+    const offY = (Math.abs(randomSeed) * 0.23) % 1
     t.offset.set(offX, offY)
     t.needsUpdate = true
-    CLONE_CACHE.set(key, t)
     return t
   }, [texture, url, size.w, size.h, size.d, randomSeed])
 }
