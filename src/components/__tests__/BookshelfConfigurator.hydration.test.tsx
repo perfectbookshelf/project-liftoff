@@ -26,7 +26,7 @@ describe("saved design hydration", () => {
       const stored = JSON.parse(localStorage.getItem("bookshelf-config") ?? "{}")
       expect(stored).toMatchObject({
         mainType: "usurround", uW: 168, uW1: 72, uW2: 72,
-        shelves: savedDesign.shelves, selectedFinish: "Oak/Oak",
+        shelves: savedDesign.shelves, selectedFinish: "Maple/Maple",
       })
     })
   })
