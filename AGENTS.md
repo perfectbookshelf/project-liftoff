@@ -8,3 +8,4 @@
 - Keep external environment lighting in its own Suspense and error boundary so slow or blocked HDR downloads cannot hide furniture or crash the wizard.
 - Use a DOM loading indicator inside furniture Suspense and finish-keyed materials, so texture loading is visible and painted colors cannot leak into wood finishes.
 - Validate Return Policy acceptance before Shopify draft creation and save acceptance time, policy URL, and server receipt time as draft attributes for an auditable checkout gate.
+- Gate all configurator 3D views on a post-hydration WebGL2 check and isolate render errors within the preview, so unsupported graphics cannot block configuration or checkout.
