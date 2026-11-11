@@ -1,5 +1,6 @@
 import * as React from "react"
 import { Check, ChevronLeft, ChevronRight, RotateCcw } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 export interface WizardStep {
@@ -111,8 +112,8 @@ export function WizardShell({
 
             {/* Step header w/ back+next */}
             {!step.hideNav && (
-              <div className="grid grid-cols-3 items-center mt-5 lg:mt-12 mb-5 lg:mb-8 gap-2">
-                <button
+              <div className="grid grid-cols-2 items-center mt-5 lg:mt-12 mb-5 lg:mb-8 gap-x-3 gap-y-4">
+                <Button variant="outline"
                   onClick={goPrev}
                   disabled={safeIndex === 0}
                   className={cn(
@@ -122,9 +123,9 @@ export function WizardShell({
                 >
                   <ChevronLeft className="h-4 w-4 shrink-0" aria-hidden />
                   Back
-                </button>
-                <div className="text-center min-w-0">
-                  <div className="font-display text-sm lg:text-base tracking-[0.15em] uppercase text-foreground leading-tight truncate">
+                </Button>
+                <div className="col-span-2 row-start-1 text-center min-w-0">
+                  <div className="font-display text-sm lg:text-base tracking-[0.15em] uppercase text-foreground leading-tight break-words">
                     {step.label}
                   </div>
                   <div className="text-[10px] tracking-[0.25em] text-muted-foreground mt-1 uppercase">
@@ -133,7 +134,7 @@ export function WizardShell({
                     {total}
                   </div>
                 </div>
-                <button
+                <Button
                   onClick={goNext}
                   disabled={safeIndex === total - 1 || (step.nextDisabled && !step.onNextBlocked)}
                   aria-disabled={step.nextDisabled || undefined}
@@ -148,7 +149,7 @@ export function WizardShell({
                 >
                   {step.nextLabel ?? "Next"}
                   <ChevronRight className="h-4 w-4 shrink-0" aria-hidden />
-                </button>
+                </Button>
               </div>
             )}
 
@@ -201,12 +202,12 @@ export function WizardProgress({
               />
               <span
                 className={cn(
-                  "mt-1.5 flex items-center gap-1 text-[9px] sm:text-[10px] tracking-[0.12em] uppercase truncate",
+                  "mt-1.5 flex items-center gap-1 text-[9px] sm:text-[10px] tracking-normal uppercase flex-wrap",
                   active ? "text-foreground font-semibold" : done ? "text-brand-walnut" : "text-muted-foreground",
                 )}
               >
                 {done && <Check className="h-2.5 w-2.5 shrink-0" aria-hidden />}
-                <span className="truncate">{label}</span>
+                <span className="break-words">{label}</span>
               </span>
             </>
           )

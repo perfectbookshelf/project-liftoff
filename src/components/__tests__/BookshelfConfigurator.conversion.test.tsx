@@ -60,8 +60,8 @@ describe("BookshelfConfigurator — conversion features", () => {
     clickNext() // → Shelves
     expect(container.textContent).not.toMatch(/\$\s?\d/)
     clickNext() // → Finish (email already saved in setup)
-    const priceText = screen.getAllByText(/^\$[\d.]+$/)[0].textContent ?? ""
-    const exact = Number(priceText.replace("$", ""))
+    const priceText = screen.getAllByText(/^\$[\d,.]+$/)[0].textContent ?? ""
+    const exact = Number(priceText.replace(/[$,]/g, ""))
     expect(exact).toBeGreaterThan(0)
     // Never expose square footage or per-square-foot pricing.
     expect(container.textContent).not.toMatch(/sq|ft²|per square/i)
@@ -84,7 +84,7 @@ describe("BookshelfConfigurator — conversion features", () => {
     render(<BookshelfConfigurator />)
     fireEvent.click(screen.getByRole("button", { name: /start from slim tower/i }))
     // Header shows the preset width on the Dimensions step.
-    expect(screen.getByText(/4' 2" wide/)).toBeInTheDocument()
+    expect(screen.getByText(/50" wide/)).toBeInTheDocument()
     clickNext()
     // Six shelves, with the depth stepping down.
     expect(screen.getByText("Shelf 6")).toBeInTheDocument()

@@ -1,3 +1,4 @@
+import { ModelLoadingFallback } from "./ModelLoadingFallback"
 import { Suspense, useMemo, useImperativeHandle, forwardRef, useEffect, useRef, useState } from "react"
 import { Canvas, useThree } from "@react-three/fiber"
 import { OrbitControls, ContactShadows } from "@react-three/drei"
@@ -42,8 +43,8 @@ const SAFETY = 2
 
 function WoodMaterial({ finish, isFrame = false, size, seed = 0 }: { finish: string; isFrame?: boolean; size?: { w?: number; h?: number; d?: number }; seed?: number }) {
   const tex = useWoodTexture(finish, size || {}, seed)
-  if (!tex) return <meshStandardMaterial color={WOOD_COLORS[finish] || WOOD_COLORS.Oak} roughness={isFrame ? 0.7 : 0.8} metalness={0} side={THREE.DoubleSide} envMapIntensity={0.3} />
-  return <meshStandardMaterial map={tex} roughness={isFrame ? 0.6 : 0.7} metalness={0} side={THREE.DoubleSide} envMapIntensity={0.3} />
+  if (!tex) return <meshStandardMaterial key={finish} color={WOOD_COLORS[finish] || WOOD_COLORS.Oak} roughness={isFrame ? 0.7 : 0.8} metalness={0} side={THREE.DoubleSide} envMapIntensity={0.3} />
+  return <meshStandardMaterial key={finish} map={tex} roughness={isFrame ? 0.6 : 0.7} metalness={0} side={THREE.DoubleSide} envMapIntensity={0.3} />
 }
 
 // ─── 3D PRIMITIVES ───
@@ -424,7 +425,7 @@ export const Portal3DView = forwardRef<Portal3DViewRef, Portal3DViewProps>(
           shadows
           gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.0, preserveDrawingBuffer: true }}
         >
-          <Suspense fallback={null}>
+          <Suspense fallback={<ModelLoadingFallback />}>
             <CanvasCapture onReady={(fn) => { captureFn = fn }} />
             <CameraController wallWidth={wallWidth} wallHeight={wallHeight} maxDepth={maxDepth} isMobile={isMobile} resetKey={resetCount} />
             <ambientLight intensity={0.6} />

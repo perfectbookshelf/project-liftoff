@@ -1,5 +1,9 @@
-# Tasks
-- [x] Ground exported photo references without changing the interactive preview.
-- [x] Upgrade image editing and verify real Bookshelf, Horizontal, and Cathedral photos.
-- [x] Move photo generation to Finish and reject stale results; generate only on click.
-- [x] Run 18 regression tests and desktop/mobile browser checks, including checkout accessibility (no order or payment created).
+# Configurator fixes
+- [x] Require Return Policy acceptance and store its timestamp on Shopify drafts.
+- [x] Add shop logo and Back to shop bar.
+- [x] Verify live finishes and show a loader until furniture is ready.
+- [x] Restore the complete saved configuration.
+- [x] Fix navigation/title overlap and truncated labels.
+- [x] Format prices and show dimensions in inches only.
+- [x] Correct shelf-depth description without changing defaults.
+- [x] Run regression tests and desktop/mobile flow checks.

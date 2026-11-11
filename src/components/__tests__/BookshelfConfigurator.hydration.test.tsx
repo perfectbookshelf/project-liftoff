@@ -5,7 +5,7 @@ import { BookshelfConfigurator } from "@/components/BookshelfConfigurator"
 
 const savedDesign = {
   mainType: "usurround", uW: 168, uW1: 72, uW2: 72,
-  selectedFinish: "Maple/Maple",
+  selectedFinish: "Maple/Maple", stepIndex: 3,
   shelves: Array.from({ length: 3 }, () => ({ height: 14, depth: 14 })),
 }
 
@@ -21,12 +21,13 @@ describe("saved design hydration", () => {
 
   it("restores the U dimensions and three tiers without overwriting them with defaults", async () => {
     localStorage.setItem("bookshelf-config", JSON.stringify(savedDesign))
+    localStorage.setItem("pbs_quote_email", "returning@example.com")
     render(<BookshelfConfigurator />)
     await waitFor(() => {
       const stored = JSON.parse(localStorage.getItem("bookshelf-config") ?? "{}")
       expect(stored).toMatchObject({
         mainType: "usurround", uW: 168, uW1: 72, uW2: 72,
-        shelves: savedDesign.shelves, selectedFinish: "Oak/Oak",
+        shelves: savedDesign.shelves, selectedFinish: "Maple/Maple", stepIndex: 3,
       })
     })
   })

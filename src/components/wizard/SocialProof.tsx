@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Star, Truck, Hammer, ShieldCheck, Lock } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { formatPrice } from "@/lib/display-format"
 import {
   photoReviews,
   REVIEWS,
@@ -126,7 +127,7 @@ export function TrustList({ total }: { total: number }) {
       : {
           icon: Truck,
           title: "Shipping calculated at checkout",
-          detail: `Free ground shipping on orders over $${STORE_FACTS.freeShippingThreshold} (${STORE_FACTS.freeShippingRegion}).`,
+          detail: `Free ground shipping on orders over ${formatPrice(STORE_FACTS.freeShippingThreshold)} (${STORE_FACTS.freeShippingRegion}).`,
         },
     {
       icon: ShieldCheck,

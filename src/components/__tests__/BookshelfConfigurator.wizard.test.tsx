@@ -7,11 +7,16 @@
  * Setup also replaces the legacy *Configurator components with throw-on-render
  * stubs, so any accidental delegation would surface as a render error.
  */
-import { describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it } from "vitest"
 import { render, screen, within, fireEvent } from "@testing-library/react"
 import { BookshelfConfigurator } from "@/components/BookshelfConfigurator"
 
 const TYPES = ["Cathedral", "U-Surround"] as const
+
+beforeEach(() => {
+  localStorage.clear()
+  localStorage.setItem("pbs_quote_email", "test@example.com")
+})
 
 function clickButtonByText(text: string | RegExp) {
   const btn = screen.getAllByRole("button").find((b) => {

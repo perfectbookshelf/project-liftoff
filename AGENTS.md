@@ -6,3 +6,5 @@
 - Strip preview-only DOM inspection attributes from 3D view modules because Three Fiber interprets them as invalid object properties.
 - Restore configurator browser storage only after hydration and delay persistence until restoration finishes, so returning designs cannot mismatch server markup or be overwritten by defaults.
 - Keep external environment lighting in its own Suspense and error boundary so slow or blocked HDR downloads cannot hide furniture or crash the wizard.
+- Use a DOM loading indicator inside furniture Suspense and finish-keyed materials, so texture loading is visible and painted colors cannot leak into wood finishes.
+- Validate Return Policy acceptance before Shopify draft creation and save acceptance time, policy URL, and server receipt time as draft attributes for an auditable checkout gate.
