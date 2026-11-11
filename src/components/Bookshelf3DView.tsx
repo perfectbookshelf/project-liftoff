@@ -1,3 +1,4 @@
+import { ModelLoadingFallback } from "./ModelLoadingFallback"
 import * as React from "react"
 import { Suspense, useMemo, useImperativeHandle, forwardRef, useEffect, useRef, useState } from "react"
 import { Canvas, useThree } from "@react-three/fiber"
@@ -49,6 +50,7 @@ function WoodMaterial({
   if (!tex) {
     return (
       <meshStandardMaterial
+        key={finish}
         color={getWoodColor(finish)}
         roughness={isFrame ? 0.7 : 0.8}
         metalness={0.0}
@@ -60,6 +62,7 @@ function WoodMaterial({
 
   return (
     <meshStandardMaterial
+      key={finish}
       map={tex}
       roughness={isFrame ? 0.6 : 0.7}
       metalness={0.0}
@@ -620,7 +623,7 @@ export const Bookshelf3DView = forwardRef<
           preserveDrawingBuffer: true,
         }}
       >
-        <Suspense fallback={null}>
+        <Suspense fallback={<ModelLoadingFallback />}>
           <PhotoCanvasCapture
             onReady={(fn) => {
               captureFunction.current = fn

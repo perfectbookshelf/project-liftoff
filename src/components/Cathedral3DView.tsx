@@ -1,3 +1,4 @@
+import { ModelLoadingFallback } from "./ModelLoadingFallback"
 import * as React from "react"
 import { Suspense, useMemo, useImperativeHandle, forwardRef, useEffect, useRef, useState } from "react"
 import { Canvas, useThree } from "@react-three/fiber"
@@ -25,9 +26,9 @@ const getWoodColor = (finish: string): string => WOOD_COLORS[finish] || WOOD_COL
 function WoodMaterial({ finish, isFrame = false, size, seed = 0 }: { finish: string; isFrame?: boolean; size?: { w?: number; h?: number; d?: number }; seed?: number }) {
   const tex = useWoodTexture(finish, size || {}, seed)
   if (!tex) {
-    return <meshStandardMaterial color={getWoodColor(finish)} roughness={isFrame ? 0.7 : 0.8} metalness={0.0} side={THREE.DoubleSide} envMapIntensity={0.3} />
+    return <meshStandardMaterial key={finish} color={getWoodColor(finish)} roughness={isFrame ? 0.7 : 0.8} metalness={0.0} side={THREE.DoubleSide} envMapIntensity={0.3} />
   }
-  return <meshStandardMaterial map={tex} roughness={isFrame ? 0.6 : 0.7} metalness={0.0} side={THREE.DoubleSide} envMapIntensity={0.3} />
+  return <meshStandardMaterial key={finish} map={tex} roughness={isFrame ? 0.6 : 0.7} metalness={0.0} side={THREE.DoubleSide} envMapIntensity={0.3} />
 }
 
 function Board({ position, width, depth, finish, zOffset = 0 }: {
@@ -240,7 +241,7 @@ export const Cathedral3DView = forwardRef<Cathedral3DViewRef, Cathedral3DViewPro
           shadows
           gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.0, preserveDrawingBuffer: true }}
         >
-          <Suspense fallback={null}>
+          <Suspense fallback={<ModelLoadingFallback />}>
             <PhotoCanvasCapture onReady={(fn) => { captureFunction.current = fn }} />
             <CameraController width={W} totalHeight={totalHeight} maxDepth={maxDepth} isMobile={isMobile} resetKey={resetCount} />
 

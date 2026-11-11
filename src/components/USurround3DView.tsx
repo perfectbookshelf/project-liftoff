@@ -1,3 +1,4 @@
+import { ModelLoadingFallback } from "./ModelLoadingFallback"
 import { Suspense, useMemo, useImperativeHandle, forwardRef, useEffect, useRef, useState } from "react"
 import { Canvas, useThree } from "@react-three/fiber"
 import { OrbitControls, ContactShadows } from "@react-three/drei"
@@ -140,7 +141,7 @@ export const USurround3DView = forwardRef<USurround3DViewRef, USurround3DViewPro
           shadows
           gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.0, preserveDrawingBuffer: true }}
         >
-          <Suspense fallback={null}>
+          <Suspense fallback={<ModelLoadingFallback />}>
             <CanvasCapture onReady={(fn) => { captureFn = fn }} />
             <CameraController w1={w1} w={w} w2={w2} totalHeight={totalHeight} maxDepth={maxDepth} isMobile={isMobile} resetKey={resetCount} />
             <ambientLight intensity={0.6} />
