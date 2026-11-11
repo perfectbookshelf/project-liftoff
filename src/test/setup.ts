@@ -28,6 +28,9 @@ class MockObs {
 ;(globalThis as any).IntersectionObserver = (globalThis as any).IntersectionObserver ?? MockObs
 
 // Stub the heavy 3D + R3F components so jsdom doesn't try to instantiate WebGL.
+vi.mock("@/components/Safe3DPreview", () => ({
+  Safe3DPreview: ({ children }: { children: unknown }) => children,
+}))
 vi.mock("@/components/Bookshelf3DView", () => ({
   Bookshelf3DView: () => null,
 }))

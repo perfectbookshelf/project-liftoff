@@ -5,6 +5,7 @@ import { useServerFn } from "@tanstack/react-start"
 import { renderPhotoreal } from "@/lib/render-photo.functions"
 import logoAsset from "@/assets/perfect-bookshelf-logo.asset.json"
 import { PreviewLoader } from "./PreviewLoader"
+import { Safe3DPreview } from "./Safe3DPreview"
 import { formatPrice, formatInches } from "@/lib/display-format"
 import { RETURN_POLICY_URL, type ReturnPolicyAcceptance } from "@/lib/return-policy"
 import { Button } from "@/components/ui/button"
@@ -1303,6 +1304,7 @@ export function BookshelfConfigurator() {
     <div ref={mainPreviewRef} className="relative w-full h-full min-h-[45vh] lg:min-h-screen flex items-center justify-center">
       {/* Dimension badge removed per request — keep canvas clean on all steps */}
       <div className="absolute inset-0">
+        <Safe3DPreview>
         <React.Suspense fallback={<Preview3DFallback />}>
 
         {mainType === "cathedral" ? (
@@ -1339,6 +1341,7 @@ export function BookshelfConfigurator() {
           <div className="w-full h-full flex items-center justify-center text-muted-foreground">Configure to see preview</div>
         )}
         </React.Suspense>
+        </Safe3DPreview>
       </div>
       
     </div>
