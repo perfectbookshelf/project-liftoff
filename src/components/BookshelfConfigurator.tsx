@@ -3,6 +3,10 @@ import { useState, useEffect, useMemo, useRef } from "react"
 import { Plus, Minus, ShoppingCart, DoorOpen, Monitor, Flame, HelpCircle, ChevronRight, Sparkles, X, Loader2 } from "lucide-react"
 import { useServerFn } from "@tanstack/react-start"
 import { renderPhotoreal } from "@/lib/render-photo.functions"
+import logoAsset from "@/assets/perfect-bookshelf-logo.asset.json"
+import { PreviewLoader } from "./PreviewLoader"
+import { formatPrice, formatInches } from "@/lib/display-format"
+import { RETURN_POLICY_URL, type ReturnPolicyAcceptance } from "@/lib/return-policy"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { Input } from "@/components/ui/input"
@@ -44,11 +48,7 @@ const USurround3DView = React.lazy(() =>
   import("./USurround3DView").then((m) => ({ default: m.USurround3DView }))
 )
 
-const Preview3DFallback = () => (
-  <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs tracking-[0.25em] uppercase">
-    Loading preview…
-  </div>
-)
+const Preview3DFallback = PreviewLoader
 
 import { PortalSchematic } from "./PortalSchematic"
 import { CathedralSchematic } from "./CathedralSchematic"
@@ -179,23 +179,7 @@ function presetRange(p: Preset): PriceRange | null {
   return computePriceRange(area, AVAILABLE_RATES)
 }
 
-function toFraction(decimal: number): string {
-  const whole = Math.floor(decimal)
-  const fraction = decimal - whole
-  const eighths = Math.round(fraction * 8)
-  if (eighths === 0) return `${whole}"`
-  if (eighths === 8) return `${whole + 1}"`
-  const map: Record<number, string> = { 1: "1/8", 2: "1/4", 3: "3/8", 4: "1/2", 5: "5/8", 6: "3/4", 7: "7/8" }
-  return `${whole} ${map[eighths]}"`
-}
-
-function toFeetAndInches(inches: number): string {
-  const feet = Math.floor(inches / 12)
-  const remainingInches = inches % 12
-  if (feet === 0) return toFraction(remainingInches)
-  if (remainingInches === 0) return `${feet}'`
-  return `${feet}' ${toFraction(remainingInches)}`
-}
+const toFraction = formatInches
 
 function calculateTotalHeight(shelves: ShelfConfig[]): number {
   const sumOfSides = shelves.reduce((sum, shelf) => sum + shelf.height, 0)
@@ -265,7 +249,7 @@ export function BookshelfConfigurator() {
   const [cornerVariant, setCornerVariant] = useState<CornerVariant>(saved.cornerVariant ?? "outside")
   const [width, setWidth] = useState<number>(saved.width ?? defaultWidth)
   const [width2, setWidth2] = useState<number>(saved.width2 ?? 50)
-  // Finish always starts at White Oak on load/refresh — never restored from saved state.
+  // New designs start at White Oak; returning designs restore their chosen finish.
   const [selectedFinish, setSelectedFinish] = useState<string>("Oak/Oak")
   const [shelves, setShelves] = useState<ShelfConfig[]>(saved.shelves ?? [
     { height: 14, depth: 14 }, { height: 14, depth: 14 },
@@ -288,6 +272,7 @@ export function BookshelfConfigurator() {
   const [cathDir, setCathDir] = useState<"left" | "right" | "both">(saved.cathDir ?? "left")
 
 
+  const [policyAcceptance, setPolicyAcceptance] = useState<ReturnPolicyAcceptance | null>(null)
   const [isAddingToCart, setIsAddingToCart] = useState(false)
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
   const [readyCheckoutUrl, setReadyCheckoutUrl] = useState<string | null>(null)
@@ -370,6 +355,10 @@ export function BookshelfConfigurator() {
     setCornerVariant(restored.cornerVariant ?? "outside")
     setWidth(restored.width ?? defaultWidth)
     setWidth2(restored.width2 ?? 50)
+    setSelectedFinish(FINISH_OPTIONS.find(f => f.id === restored.selectedFinish && !f.comingSoon)?.id ?? "Oak/Oak")
+    const restoredEmail = loadQuoteEmail()
+    const restoredStep = Number.isInteger(restored.stepIndex) ? Math.max(0, Math.min(4, restored.stepIndex)) : 0
+    setStepIndex(EMAIL_RE.test(restoredEmail) ? restoredStep : Math.min(2, restoredStep))
     if (Array.isArray(restored.shelves) && restored.shelves.length) setShelves(restored.shelves)
     if (Array.isArray(restored.shelves2) && restored.shelves2.length) setShelves2(restored.shelves2)
     setUW1(restored.uW1 ?? 50)
@@ -388,7 +377,7 @@ export function BookshelfConfigurator() {
   useEffect(() => {
     if (!storageRestored) return
     safeSetItem("bookshelf-config", JSON.stringify({
-      mainType, cornerVariant, width, width2, selectedFinish, shelves, shelves2,
+      mainType, cornerVariant, width, width2, selectedFinish, shelves, shelves2, stepIndex,
       uW1, uW, uW2,
       cathW, cathH, cathH1, cathDir,
     }))
@@ -396,6 +385,14 @@ export function BookshelfConfigurator() {
     setReadyCheckoutUrl(null)
   }, [mainType, cornerVariant, width, width2, selectedFinish, shelves, shelves2,
       uW1, uW, uW2, cathW, cathH, cathH1, cathDir, storageRestored])
+
+  useEffect(() => {
+    if (!storageRestored) return
+    try {
+      const config = JSON.parse(safeGetItem("bookshelf-config") ?? "{}")
+      safeSetItem("bookshelf-config", JSON.stringify({ ...config, stepIndex }))
+    } catch { /* Ignore unavailable storage. */ }
+  }, [stepIndex, storageRestored])
 
   useEffect(() => {
     const check = () => setIsMobileDevice(window.innerWidth < 768)
@@ -552,7 +549,7 @@ export function BookshelfConfigurator() {
   }
 
   async function handleAddToCart() {
-    if (!result) return
+    if (!result || !policyAcceptance || isAddingToCart) return
     setIsAddingToCart(true)
     const checkoutParams = {
       product_type: mainType,
@@ -588,7 +585,7 @@ export function BookshelfConfigurator() {
     }
 
     try {
-      const checkoutUrl = await createShopifyCheckout({ price: totalPrice.toFixed(2), config, imageDataUrl, schematicDataUrl, discountCode: appliedDiscount?.code, email: quoteEmail })
+      const checkoutUrl = await createShopifyCheckout({ price: totalPrice.toFixed(2), config, imageDataUrl, schematicDataUrl, discountCode: appliedDiscount?.code, email: quoteEmail, returnPolicyAcceptance: policyAcceptance })
       const _pbsSet = (key: string, value: string) => {
         try { localStorage.setItem(key, value) } catch { /* ignore */ }
         if (window.self !== window.top) window.parent.postMessage({ type: "pbs-storage-set", key, value }, "*")
@@ -617,6 +614,7 @@ export function BookshelfConfigurator() {
     // Wipe persisted state so a page reload also lands on the bookshelf default.
     try { localStorage.removeItem("bookshelf-config") } catch { /* ignore */ }
     setStepIndex(0)
+    setPolicyAcceptance(null)
     setMainType("bookshelf")
     setCornerVariant("outside")
     setWidth(defaultWidth)
@@ -650,7 +648,7 @@ export function BookshelfConfigurator() {
   }
 
   const finishOption = FINISH_OPTIONS.find((f) => f.id === selectedFinish)
-  const activeType = TYPE_OPTIONS.find(t => t.id === mainType)!
+  const activeType = (TYPE_OPTIONS.find(t => t.id === mainType) ?? TYPE_OPTIONS[0])
 
   const quoteLeadConfig = () => ({
     mainType,
@@ -701,7 +699,7 @@ export function BookshelfConfigurator() {
   const typeStep: WizardStep = {
     label: "Type",
     selectionName: activeType.label,
-    priceDelta: "+ $0",
+    priceDelta: "",
     description: activeType.description,
     notice: priceNotice(0),
     nextDisabled: needsSubVariant && !subVariantConfirmed,
@@ -825,7 +823,7 @@ export function BookshelfConfigurator() {
     if (mainType === "corner") return `${toFraction(width)} × ${toFraction(width2)}`
     if (mainType === "usurround") return `${toFraction(uW1)} · ${toFraction(uW)} · ${toFraction(uW2)}`
     if (mainType === "cathedral") return `${toFraction(cathW)} × ${toFraction(cathH)}–${toFraction(cathH1)}`
-    return `${toFeetAndInches(width)} wide`
+    return `${toFraction(width)} wide`
   })()
 
   const widthStepDelta = (() => {
@@ -919,10 +917,10 @@ export function BookshelfConfigurator() {
     mainType === "cathedral" ? cathedralStackHeight : totalHeight
   const shelvesStepDescription =
     mainType === "cathedral"
-      ? "Each tier sits across the full width available at its height. Higher tiers narrow automatically as the slope cuts in. Depth narrows as you go up."
+      ? "Each tier sits across the full width available at its height. Higher tiers narrow automatically as the slope cuts in. Depth can stay equal or decrease on higher tiers."
       : mainType === "usurround"
-      ? "Shelves are shared across all three walls (left, front, right). Each shelf has its own height and depth — depth narrows as you go up."
-      : "Each shelf has its own height and depth. Depth narrows as you go up — perfect for stepped, sculptural shelves."
+      ? "Shelves are shared across all three walls (left, front, right). Each shelf has its own height and depth — depth can stay equal or decrease on higher shelves."
+      : "Each shelf has its own height and depth. Keep equal depths or choose shallower upper shelves for a stepped profile."
   const typePrefix =
     mainType === "cathedral" ? "Cathedral · "
     : mainType === "usurround" ? "U-Surround · "
@@ -1080,7 +1078,7 @@ export function BookshelfConfigurator() {
   const finishStep: WizardStep = {
     label: "Preview",
     selectionName: finishOption?.label ?? "—",
-    priceDelta: `$${totalPrice.toFixed(2)}`,
+    priceDelta: result ? formatPrice(totalPrice) : "Calculating…",
     description: finishOption?.description ?? "Choose your wood and color combination. The pair (front / interior) is shown on each swatch.",
     nextLabel: "Review",
     content: (
@@ -1167,7 +1165,7 @@ export function BookshelfConfigurator() {
   const reviewStep: WizardStep = {
     label: "Review",
     selectionName: `${activeType.label} · ${finishOption?.label ?? ""}`,
-    priceDelta: `$${totalPrice.toFixed(2)}`,
+    priceDelta: result ? formatPrice(totalPrice) : "Calculating…",
     description: "Review the configuration below. We'll generate a draft order in Shopify and take you to checkout.",
     hideNav: true,
     content: (
@@ -1206,17 +1204,17 @@ export function BookshelfConfigurator() {
             <>
               <div className="flex items-baseline justify-between text-sm text-muted-foreground">
                 <span>Subtotal</span>
-                <span>${totalPrice.toFixed(2)}</span>
+                <span>{formatPrice(totalPrice)}</span>
               </div>
               <div className="flex items-baseline justify-between text-sm text-green-600">
                 <span>Discount ({appliedDiscount.code})</span>
-                <span>-${discountAmount.toFixed(2)}</span>
+                <span>−{formatPrice(discountAmount)}</span>
               </div>
             </>
           )}
           <div className="flex items-baseline justify-between">
             <span className="text-[11px] tracking-[0.3em] uppercase text-muted-foreground">Total</span>
-            <span className="text-3xl font-display tracking-tight">${discountedTotal.toFixed(2)}</span>
+            <span className="text-3xl font-display tracking-tight">{formatPrice(discountedTotal)}</span>
           </div>
         </div>
 
@@ -1236,7 +1234,7 @@ export function BookshelfConfigurator() {
           </div>
         )}
 
-        {readyCheckoutUrl && (
+        {readyCheckoutUrl && policyAcceptance && (
           <a
             href={readyCheckoutUrl}
             target="_top"
@@ -1247,10 +1245,28 @@ export function BookshelfConfigurator() {
           </a>
         )}
 
+        <div className="flex items-start gap-3 text-sm leading-relaxed">
+          <input
+            id="return-policy-consent"
+            type="checkbox"
+            checked={!!policyAcceptance}
+            disabled={isAddingToCart}
+            onChange={(e) => {
+              setPolicyAcceptance(e.target.checked ? { accepted: true, acceptedAt: new Date().toISOString() } : null)
+              setReadyCheckoutUrl(null)
+            }}
+            className="mt-1 h-5 w-5 shrink-0 accent-primary"
+            required
+          />
+          <label htmlFor="return-policy-consent">
+            I've read and agree to the{" "}
+            <a href={RETURN_POLICY_URL} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Return Policy</a>
+          </label>
+        </div>
         <div className="flex flex-col gap-3 pt-2">
           <Button
             onClick={handleAddToCart}
-            disabled={isAddingToCart || !result}
+            disabled={isAddingToCart || !result || !policyAcceptance}
             className="w-full h-12 px-8 rounded-none gap-2 bg-foreground hover:bg-brand-walnut text-background tracking-[0.2em] uppercase text-[11px] font-semibold transition-colors"
           >
             <ShoppingCart className="h-4 w-4" />
@@ -1330,6 +1346,14 @@ export function BookshelfConfigurator() {
 
   return (
     <>
+      <header className="flex min-h-16 items-center justify-between gap-4 border-b border-border bg-background px-4 py-2 sm:px-6">
+        <a href="https://www.perfectbookshelf.com" target="_top" aria-label="The Perfect Bookshelf home">
+          <img src={logoAsset.url} alt="The Perfect Bookshelf" className="h-12 w-auto" />
+        </a>
+        <Button asChild variant="ghost" className="shrink-0 text-sm">
+          <a href="https://www.perfectbookshelf.com" target="_top">← Back to shop</a>
+        </Button>
+      </header>
       <WizardShell
         preview={preview}
         steps={steps}
