@@ -286,6 +286,8 @@ export function BookshelfConfigurator() {
   const [photoUrl, setPhotoUrl] = useState<string | null>(null)
   const [photoError, setPhotoError] = useState<string | null>(null)
   const [photoOpen, setPhotoOpen] = useState(false)
+  const [previewUnavailable, setPreviewUnavailable] = useState(false)
+  const handlePreviewUnavailable = React.useCallback(() => setPreviewUnavailable(true), [])
   const callRenderPhoto = useServerFn(renderPhotoreal)
   const photoRevision = useRef(0)
   const photoConfigKey = JSON.stringify({ mainType, selectedFinish, width, width2, shelves, shelves2, cathW, cathH, cathH1, cathDir, cornerVariant, uW1, uW, uW2 })
@@ -1040,17 +1042,17 @@ export function BookshelfConfigurator() {
   }
 
   const handleGeneratePhoto = async () => {
-    if (!isPhotoRenderType(mainType) || photoStatus === "loading") return
+    if (!isPhotoRenderType(mainType) || photoStatus === "loading" || previewUnavailable) return
     const revision = ++photoRevision.current
     const requestKey = photoConfigKey
     const activeRef =
       mainType === "cathedral" ? cathedral3DRef.current : bookshelf3DRef.current
-    if (!activeRef) return
     setPhotoStatus("loading")
     setPhotoError(null)
     setPhotoUrl(null)
     setPhotoOpen(true)
     try {
+      if (!activeRef) throw new Error("Your 3D preview is not ready. Please wait for it to load before generating a photo.")
       const snapshot = await activeRef.captureImage({ grounded: true })
       if (revision !== photoRevision.current || requestKey !== latestPhotoConfig.current) return
       const dims =
@@ -1090,7 +1092,8 @@ export function BookshelfConfigurator() {
             type="button"
             variant="outline"
             onClick={handleGeneratePhoto}
-            disabled={photoStatus === "loading"}
+            disabled={photoStatus === "loading" || previewUnavailable}
+            aria-describedby={previewUnavailable ? "photo-unavailable" : undefined}
             aria-label="Generate AI photo render of your bookshelf"
             className="h-auto whitespace-normal rounded-none w-full text-left border border-brand-walnut/40 bg-secondary/40 p-4 flex items-start gap-4 transition-colors hover:bg-secondary hover:border-brand-walnut cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -1122,6 +1125,11 @@ export function BookshelfConfigurator() {
               </div>
             </div>
           </Button>
+        )}
+        {isPhotoRenderType(mainType) && previewUnavailable && (
+          <p id="photo-unavailable" role="status" className="text-sm text-muted-foreground">
+            Photo preview needs 3D graphics, which are unavailable in this browser. Try another browser or device. You can still review your design and checkout here.
+          </p>
         )}
         {isPhotoRenderType(mainType) && photoUrl && (
           <Button variant="ghost" className="w-full h-auto p-0" onClick={() => setPhotoOpen(true)} aria-label="View generated photo">
@@ -1304,7 +1312,7 @@ export function BookshelfConfigurator() {
     <div ref={mainPreviewRef} className="relative w-full h-full min-h-[45vh] lg:min-h-screen flex items-center justify-center">
       {/* Dimension badge removed per request — keep canvas clean on all steps */}
       <div className="absolute inset-0">
-        <Safe3DPreview>
+        <Safe3DPreview onUnavailable={handlePreviewUnavailable}>
         <React.Suspense fallback={<Preview3DFallback />}>
 
         {mainType === "cathedral" ? (
@@ -1423,13 +1431,15 @@ export function BookshelfConfigurator() {
                 </a>
               )}
               {(photoStatus === "done" || photoStatus === "error") && (
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  disabled={previewUnavailable}
                   onClick={handleGeneratePhoto}
                   className="text-[11px] tracking-[0.2em] uppercase font-semibold text-background hover:text-brand-walnut"
                 >
                   Regenerate ↻
-                </button>
+                </Button>
               )}
             </div>
             <div className="text-[10px] tracking-[0.2em] uppercase text-background/50 text-center">

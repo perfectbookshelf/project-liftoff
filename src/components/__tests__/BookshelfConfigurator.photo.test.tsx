@@ -64,4 +64,12 @@ describe("Finish photos", () => {
     await screen.findByAltText("Photoreal bookshelf render")
     expect(mocks.render).toHaveBeenCalledTimes(2)
   })
+  it("does not request a paid photo when the 3D snapshot fails", async () => {
+    mocks.capture.mockRejectedValue(new Error("Canvas not ready"))
+    await finish(); trigger()
+    await screen.findByText("Canvas not ready")
+    expect(mocks.render).not.toHaveBeenCalled()
+    click("Close"); click("Review")
+    expect(screen.getByRole("button", { name: "Checkout" })).toBeInTheDocument()
+  })
 })

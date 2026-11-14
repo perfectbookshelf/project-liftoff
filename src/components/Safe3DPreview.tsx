@@ -1,7 +1,8 @@
 import * as React from "react"
 import { PreviewLoader } from "./PreviewLoader"
 
-function PreviewUnavailable() {
+function PreviewUnavailable({ onUnavailable }: { onUnavailable?: () => void }) {
+  React.useEffect(() => { onUnavailable?.() }, [onUnavailable])
   return (
     <div role="status" className="flex h-full w-full items-center justify-center px-6 text-center text-sm text-muted-foreground">
       3D preview unavailable on this device.
@@ -9,10 +10,10 @@ function PreviewUnavailable() {
   )
 }
 
-class PreviewErrorBoundary extends React.Component<{ children: React.ReactNode }, { failed: boolean }> {
+class PreviewErrorBoundary extends React.Component<{ children: React.ReactNode; onUnavailable?: () => void }, { failed: boolean }> {
   state = { failed: false }
   static getDerivedStateFromError() { return { failed: true } }
-  render() { return this.state.failed ? <PreviewUnavailable /> : this.props.children }
+  render() { return this.state.failed ? <PreviewUnavailable onUnavailable={this.props.onUnavailable} /> : this.props.children }
 }
 
 export function supportsWebGL(): boolean {
@@ -26,10 +27,10 @@ export function supportsWebGL(): boolean {
   } catch { return false }
 }
 
-export function Safe3DPreview({ children }: { children: React.ReactNode }) {
+export function Safe3DPreview({ children, onUnavailable }: { children: React.ReactNode; onUnavailable?: () => void }) {
   const [available, setAvailable] = React.useState<boolean | null>(null)
   React.useEffect(() => { setAvailable(supportsWebGL()) }, [])
   if (available === null) return <PreviewLoader />
-  if (!available) return <PreviewUnavailable />
-  return <PreviewErrorBoundary>{children}</PreviewErrorBoundary>
+  if (!available) return <PreviewUnavailable onUnavailable={onUnavailable} />
+  return <PreviewErrorBoundary onUnavailable={onUnavailable}>{children}</PreviewErrorBoundary>
 }
