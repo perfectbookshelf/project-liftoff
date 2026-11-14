@@ -8,3 +8,4 @@
 - [x] Correct shelf-depth description without changing defaults.
 - [x] Run regression tests and desktop/mobile flow checks.
 - [x] Isolate unavailable WebGL and verify the configurator remains usable with graphics disabled.
+- [x] Check all preview/photo/checkout paths and explain unavailable photo generation without blocking ordering.
