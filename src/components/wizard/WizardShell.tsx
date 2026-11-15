@@ -66,7 +66,7 @@ export function WizardShell({
 
   return (
     <div className="w-full configurator-root bg-background">
-      <div className="flex flex-col lg:flex-row configurator-layout min-h-screen">
+      <div className="flex flex-col lg:flex-row configurator-layout">
         {/* Brand mark — desktop only, sits over the preview corner */}
         {brand && (
           <div className="hidden lg:block absolute top-6 left-6 z-20 text-xs tracking-[0.3em] font-semibold text-foreground/80">
@@ -76,7 +76,7 @@ export function WizardShell({
 
         {/* Preview */}
         <div className="lg:w-[58%] xl:w-[62%] flex-shrink-0 bg-secondary/40 configurator-preview relative">
-          <div className="relative w-full h-[45vh] lg:h-screen lg:sticky lg:top-0">
+          <div className="relative w-full h-[32svh] min-h-[220px] lg:h-[80vh]">
             {preview}
           </div>
         </div>
@@ -99,7 +99,7 @@ export function WizardShell({
               onSelect={(i) => i < safeIndex && onIndexChange(i)}
             />
           </div>
-          <div className="flex-1 px-6 md:px-10 lg:px-12 pt-3 lg:pt-8 pb-32 configurator-config-inner overflow-y-auto">
+          <div className="flex-1 px-6 md:px-10 lg:px-12 pt-3 lg:pt-8 pb-32 configurator-config-inner">
 
             {step.notice && <div className="mt-1 lg:mt-2">{step.notice}</div>}
 

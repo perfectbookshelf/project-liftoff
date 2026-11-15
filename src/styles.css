@@ -156,7 +156,11 @@
   }
 }
 
-/* ─── Mobile configurator layout: fixed preview + scrollable config ─── */
+/* ─── One page scroll at every width: no sticky / nested scroll ─── */
+.configurator-root, .configurator-layout, .configurator-config, .configurator-config-inner { overflow: visible; }
+.configurator-preview > div { position: relative; }
+
+/* ─── Mobile configurator layout ─── */
 @media (max-width: 768px) {
   /* Let the page scroll naturally — no nested scroll containers, no sticky preview */
   .configurator-root {
@@ -179,7 +183,6 @@
     max-height: 32svh;
     min-height: 220px;
     overflow: hidden;
-    touch-action: none;
   }
   .configurator-preview > div {
     height: 100% !important;
@@ -187,7 +190,7 @@
     padding: 0 !important;
   }
   .configurator-preview canvas {
-    touch-action: none;
+    touch-action: pan-y;
   }
   .configurator-config {
     flex: 1 1 auto;
