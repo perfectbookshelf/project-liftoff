@@ -1,11 +1,9 @@
-# Configurator fixes
-- [x] Require Return Policy acceptance and store its timestamp on Shopify drafts.
-- [x] Add shop logo and Back to shop bar.
-- [x] Verify live finishes and show a loader until furniture is ready.
-- [x] Restore the complete saved configuration.
-- [x] Fix navigation/title overlap and truncated labels.
-- [x] Format prices and show dimensions in inches only.
-- [x] Correct shelf-depth description without changing defaults.
-- [x] Run regression tests and desktop/mobile flow checks.
-- [x] Isolate unavailable WebGL and verify the configurator remains usable with graphics disabled.
-- [x] Check all preview/photo/checkout paths and explain unavailable photo generation without blocking ordering.
+# Roadmap — checkout friction & line item (2026-11-15)
+- [ ] 1 Passive return-policy line under Checkout (checkbox already removed)
+- [ ] 2 Line item title with finish + size + shelves
+- [ ] 3 Hide preview/email/schematic attributes (underscore)
+- [ ] 4 Quote product with render thumbnail + 30-day cleanup job; test one quote
+- [ ] 5 Review copy + Shop Pay/Affirm line
+- [ ] 8 Loader until 3D canvas paints
+- [ ] 9 Size summary line at top of review step
+- [ ] Acceptance at 375px
