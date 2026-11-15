@@ -64,6 +64,15 @@ export function WizardShell({
     onIndexChange(safeIndex + 1)
   }
 
+  React.useEffect(() => {
+    if (typeof window === "undefined" || window.self === window.top) return
+    const send = () => window.parent.postMessage({ type: "pbs-iframe-height", height: document.documentElement.scrollHeight }, "*")
+    const ro = new ResizeObserver(send)
+    ro.observe(document.body)
+    send()
+    return () => ro.disconnect()
+  }, [])
+
   return (
     <div className="w-full configurator-root bg-background">
       <div className="flex flex-col lg:flex-row configurator-layout">
