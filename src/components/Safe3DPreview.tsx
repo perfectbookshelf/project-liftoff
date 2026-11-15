@@ -32,5 +32,35 @@ export function Safe3DPreview({ children, onUnavailable }: { children: React.Rea
   React.useEffect(() => { setAvailable(supportsWebGL()) }, [])
   if (available === null) return <PreviewLoader />
   if (!available) return <PreviewUnavailable onUnavailable={onUnavailable} />
-  return <PreviewErrorBoundary onUnavailable={onUnavailable}>{children}</PreviewErrorBoundary>
+  return (
+    <PreviewErrorBoundary onUnavailable={onUnavailable}>
+      <CanvasReadyOverlay>{children}</CanvasReadyOverlay>
+    </PreviewErrorBoundary>
+  )
+}
+
+/** Shows the loader over the preview until a canvas exists and has painted a couple of frames. */
+function CanvasReadyOverlay({ children }: { children: React.ReactNode }) {
+  const ref = React.useRef<HTMLDivElement>(null)
+  const [ready, setReady] = React.useState(false)
+  React.useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    let raf = 0
+    const check = () => {
+      if (!el.querySelector("canvas")) return
+      observer.disconnect()
+      raf = requestAnimationFrame(() => { raf = requestAnimationFrame(() => setReady(true)) })
+    }
+    const observer = new MutationObserver(check)
+    observer.observe(el, { childList: true, subtree: true })
+    check()
+    return () => { observer.disconnect(); cancelAnimationFrame(raf) }
+  }, [])
+  return (
+    <div ref={ref} className="relative h-full w-full">
+      {children}
+      {!ready && <div className="absolute inset-0 z-10 bg-secondary/40"><PreviewLoader /></div>}
+    </div>
+  )
 }

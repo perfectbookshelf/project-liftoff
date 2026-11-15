@@ -14,6 +14,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ApiPbsCreateCheckoutRouteImport } from './routes/api/pbs-create-checkout'
 import { Route as ApiPublicPbsBackfillConsentRouteImport } from './routes/api/public/pbs-backfill-consent'
 import { Route as ApiPublicPbsCaptureLeadRouteImport } from './routes/api/public/pbs-capture-lead'
+import { Route as ApiPublicPbsCleanupQuotesRouteImport } from './routes/api/public/pbs-cleanup-quotes'
 import { Route as ApiPublicPbsFunnelEventRouteImport } from './routes/api/public/pbs-funnel-event'
 import { Route as ApiShopifyCheckoutRouteImport } from './routes/api/shopify/checkout'
 import { Route as ApiShopifyTestRouteImport } from './routes/api/shopify/test'
@@ -45,6 +46,12 @@ const ApiPublicPbsCaptureLeadRoute = ApiPublicPbsCaptureLeadRouteImport.update({
   path: '/api/public/pbs-capture-lead',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPbsCleanupQuotesRoute =
+  ApiPublicPbsCleanupQuotesRouteImport.update({
+    id: '/api/public/pbs-cleanup-quotes',
+    path: '/api/public/pbs-cleanup-quotes',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicPbsFunnelEventRoute = ApiPublicPbsFunnelEventRouteImport.update({
   id: '/api/public/pbs-funnel-event',
   path: '/api/public/pbs-funnel-event',
@@ -73,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/api/pbs-create-checkout': typeof ApiPbsCreateCheckoutRoute
   '/api/public/pbs-backfill-consent': typeof ApiPublicPbsBackfillConsentRoute
   '/api/public/pbs-capture-lead': typeof ApiPublicPbsCaptureLeadRoute
+  '/api/public/pbs-cleanup-quotes': typeof ApiPublicPbsCleanupQuotesRoute
   '/api/public/pbs-funnel-event': typeof ApiPublicPbsFunnelEventRoute
   '/api/shopify/checkout': typeof ApiShopifyCheckoutRoute
   '/api/shopify/test': typeof ApiShopifyTestRoute
@@ -84,6 +92,7 @@ export interface FileRoutesByTo {
   '/api/pbs-create-checkout': typeof ApiPbsCreateCheckoutRoute
   '/api/public/pbs-backfill-consent': typeof ApiPublicPbsBackfillConsentRoute
   '/api/public/pbs-capture-lead': typeof ApiPublicPbsCaptureLeadRoute
+  '/api/public/pbs-cleanup-quotes': typeof ApiPublicPbsCleanupQuotesRoute
   '/api/public/pbs-funnel-event': typeof ApiPublicPbsFunnelEventRoute
   '/api/shopify/checkout': typeof ApiShopifyCheckoutRoute
   '/api/shopify/test': typeof ApiShopifyTestRoute
@@ -96,6 +105,7 @@ export interface FileRoutesById {
   '/api/pbs-create-checkout': typeof ApiPbsCreateCheckoutRoute
   '/api/public/pbs-backfill-consent': typeof ApiPublicPbsBackfillConsentRoute
   '/api/public/pbs-capture-lead': typeof ApiPublicPbsCaptureLeadRoute
+  '/api/public/pbs-cleanup-quotes': typeof ApiPublicPbsCleanupQuotesRoute
   '/api/public/pbs-funnel-event': typeof ApiPublicPbsFunnelEventRoute
   '/api/shopify/checkout': typeof ApiShopifyCheckoutRoute
   '/api/shopify/test': typeof ApiShopifyTestRoute
@@ -109,6 +119,7 @@ export interface FileRouteTypes {
     | '/api/pbs-create-checkout'
     | '/api/public/pbs-backfill-consent'
     | '/api/public/pbs-capture-lead'
+    | '/api/public/pbs-cleanup-quotes'
     | '/api/public/pbs-funnel-event'
     | '/api/shopify/checkout'
     | '/api/shopify/test'
@@ -120,6 +131,7 @@ export interface FileRouteTypes {
     | '/api/pbs-create-checkout'
     | '/api/public/pbs-backfill-consent'
     | '/api/public/pbs-capture-lead'
+    | '/api/public/pbs-cleanup-quotes'
     | '/api/public/pbs-funnel-event'
     | '/api/shopify/checkout'
     | '/api/shopify/test'
@@ -131,6 +143,7 @@ export interface FileRouteTypes {
     | '/api/pbs-create-checkout'
     | '/api/public/pbs-backfill-consent'
     | '/api/public/pbs-capture-lead'
+    | '/api/public/pbs-cleanup-quotes'
     | '/api/public/pbs-funnel-event'
     | '/api/shopify/checkout'
     | '/api/shopify/test'
@@ -143,6 +156,7 @@ export interface RootRouteChildren {
   ApiPbsCreateCheckoutRoute: typeof ApiPbsCreateCheckoutRoute
   ApiPublicPbsBackfillConsentRoute: typeof ApiPublicPbsBackfillConsentRoute
   ApiPublicPbsCaptureLeadRoute: typeof ApiPublicPbsCaptureLeadRoute
+  ApiPublicPbsCleanupQuotesRoute: typeof ApiPublicPbsCleanupQuotesRoute
   ApiPublicPbsFunnelEventRoute: typeof ApiPublicPbsFunnelEventRoute
   ApiShopifyCheckoutRoute: typeof ApiShopifyCheckoutRoute
   ApiShopifyTestRoute: typeof ApiShopifyTestRoute
@@ -186,6 +200,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPbsCaptureLeadRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/pbs-cleanup-quotes': {
+      id: '/api/public/pbs-cleanup-quotes'
+      path: '/api/public/pbs-cleanup-quotes'
+      fullPath: '/api/public/pbs-cleanup-quotes'
+      preLoaderRoute: typeof ApiPublicPbsCleanupQuotesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/pbs-funnel-event': {
       id: '/api/public/pbs-funnel-event'
       path: '/api/public/pbs-funnel-event'
@@ -223,6 +244,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPbsCreateCheckoutRoute: ApiPbsCreateCheckoutRoute,
   ApiPublicPbsBackfillConsentRoute: ApiPublicPbsBackfillConsentRoute,
   ApiPublicPbsCaptureLeadRoute: ApiPublicPbsCaptureLeadRoute,
+  ApiPublicPbsCleanupQuotesRoute: ApiPublicPbsCleanupQuotesRoute,
   ApiPublicPbsFunnelEventRoute: ApiPublicPbsFunnelEventRoute,
   ApiShopifyCheckoutRoute: ApiShopifyCheckoutRoute,
   ApiShopifyTestRoute: ApiShopifyTestRoute,
