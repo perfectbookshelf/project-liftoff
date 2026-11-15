@@ -1308,7 +1308,7 @@ export function BookshelfConfigurator() {
   /* ─── Preview ─── */
 
   const preview = (
-    <div ref={mainPreviewRef} className="relative w-full h-full min-h-[45vh] lg:min-h-screen flex items-center justify-center">
+    <div ref={mainPreviewRef} className="relative w-full h-full flex items-center justify-center">
       {/* Dimension badge removed per request — keep canvas clean on all steps */}
       <div className="absolute inset-0">
         <Safe3DPreview onUnavailable={handlePreviewUnavailable}>
