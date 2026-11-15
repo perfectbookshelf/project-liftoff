@@ -6,7 +6,6 @@ import { renderPhotoreal } from "@/lib/render-photo.functions"
 import { PreviewLoader } from "./PreviewLoader"
 import { Safe3DPreview } from "./Safe3DPreview"
 import { formatPrice, formatInches } from "@/lib/display-format"
-import { RETURN_POLICY_URL, type ReturnPolicyAcceptance } from "@/lib/return-policy"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { Input } from "@/components/ui/input"
@@ -272,7 +271,6 @@ export function BookshelfConfigurator() {
   const [cathDir, setCathDir] = useState<"left" | "right" | "both">(saved.cathDir ?? "left")
 
 
-  const [policyAcceptance, setPolicyAcceptance] = useState<ReturnPolicyAcceptance | null>(null)
   const [isAddingToCart, setIsAddingToCart] = useState(false)
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
   const [readyCheckoutUrl, setReadyCheckoutUrl] = useState<string | null>(null)
@@ -551,7 +549,7 @@ export function BookshelfConfigurator() {
   }
 
   async function handleAddToCart() {
-    if (!result || !policyAcceptance || isAddingToCart) return
+    if (!result || isAddingToCart) return
     setIsAddingToCart(true)
     const checkoutParams = {
       product_type: mainType,
@@ -587,7 +585,7 @@ export function BookshelfConfigurator() {
     }
 
     try {
-      const checkoutUrl = await createShopifyCheckout({ price: totalPrice.toFixed(2), config, imageDataUrl, schematicDataUrl, discountCode: appliedDiscount?.code, email: quoteEmail, returnPolicyAcceptance: policyAcceptance })
+      const checkoutUrl = await createShopifyCheckout({ price: totalPrice.toFixed(2), config, imageDataUrl, schematicDataUrl, discountCode: appliedDiscount?.code, email: quoteEmail })
       const _pbsSet = (key: string, value: string) => {
         try { localStorage.setItem(key, value) } catch { /* ignore */ }
         if (window.self !== window.top) window.parent.postMessage({ type: "pbs-storage-set", key, value }, "*")
@@ -616,7 +614,6 @@ export function BookshelfConfigurator() {
     // Wipe persisted state so a page reload also lands on the bookshelf default.
     try { localStorage.removeItem("bookshelf-config") } catch { /* ignore */ }
     setStepIndex(0)
-    setPolicyAcceptance(null)
     setMainType("bookshelf")
     setCornerVariant("outside")
     setWidth(defaultWidth)
@@ -1242,7 +1239,7 @@ export function BookshelfConfigurator() {
           </div>
         )}
 
-        {readyCheckoutUrl && policyAcceptance && (
+        {readyCheckoutUrl && (
           <a
             href={readyCheckoutUrl}
             target="_top"
@@ -1253,28 +1250,10 @@ export function BookshelfConfigurator() {
           </a>
         )}
 
-        <div className="flex items-start gap-3 text-sm leading-relaxed">
-          <input
-            id="return-policy-consent"
-            type="checkbox"
-            checked={!!policyAcceptance}
-            disabled={isAddingToCart}
-            onChange={(e) => {
-              setPolicyAcceptance(e.target.checked ? { accepted: true, acceptedAt: new Date().toISOString() } : null)
-              setReadyCheckoutUrl(null)
-            }}
-            className="mt-1 h-5 w-5 shrink-0 accent-primary"
-            required
-          />
-          <label htmlFor="return-policy-consent">
-            I've read and agree to the{" "}
-            <a href={RETURN_POLICY_URL} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Return Policy</a>
-          </label>
-        </div>
         <div className="flex flex-col gap-3 pt-2">
           <Button
             onClick={handleAddToCart}
-            disabled={isAddingToCart || !result || !policyAcceptance}
+            disabled={isAddingToCart || !result}
             className="w-full h-12 px-8 rounded-none gap-2 bg-foreground hover:bg-brand-walnut text-background tracking-[0.2em] uppercase text-[11px] font-semibold transition-colors"
           >
             <ShoppingCart className="h-4 w-4" />

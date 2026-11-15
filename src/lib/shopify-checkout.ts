@@ -1,6 +1,4 @@
-import type { ReturnPolicyAcceptance } from "./return-policy"
 interface CheckoutPayload {
-  returnPolicyAcceptance: ReturnPolicyAcceptance
   price: string
   config: Record<string, any>
   imageDataUrl?: string | null
