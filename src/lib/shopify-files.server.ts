@@ -23,7 +23,7 @@ function decodeDataUrl(dataUrl: string): { mimeType: string; bytes: Uint8Array }
   }
 }
 
-async function shopifyGraphQL<T = any>(
+export async function shopifyGraphQL<T = any>(
   shopHandle: string,
   accessToken: string,
   query: string,
@@ -153,7 +153,18 @@ export async function uploadDataUrlToShopifyFiles(
   const fileNode = fileData?.fileCreate?.files?.[0] as
     | { image?: { url?: string } | null; url?: string }
     | undefined
-  const cdnUrl = fileNode?.image?.url || fileNode?.url
+  let cdnUrl = fileNode?.image?.url || fileNode?.url
+  const fileId = (fileNode as { id?: string } | undefined)?.id
+  // Shopify processes images asynchronously; wait briefly for the permanent CDN URL.
+  for (let i = 0; !cdnUrl && fileId && i < 4; i++) {
+    await new Promise((r) => setTimeout(r, 1000))
+    const node = await shopifyGraphQL<{ node?: { image?: { url?: string } | null; url?: string } | null }>(
+      shopHandle, accessToken,
+      `query($id: ID!) { node(id: $id) { ... on MediaImage { image { url } } ... on GenericFile { url } } }`,
+      { id: fileId },
+    )
+    cdnUrl = node?.node?.image?.url || node?.node?.url
+  }
   if (!cdnUrl) {
     // Shopify processes images asynchronously — image URL may not be ready yet.
     // For our use case (sending a link in checkout), the resourceUrl is a valid
