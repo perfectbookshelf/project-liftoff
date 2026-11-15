@@ -3,7 +3,6 @@ import { useState, useEffect, useMemo, useRef } from "react"
 import { Plus, Minus, ShoppingCart, DoorOpen, Monitor, Flame, HelpCircle, ChevronRight, Sparkles, X, Loader2 } from "lucide-react"
 import { useServerFn } from "@tanstack/react-start"
 import { renderPhotoreal } from "@/lib/render-photo.functions"
-import logoAsset from "@/assets/perfect-bookshelf-logo.asset.json"
 import { PreviewLoader } from "./PreviewLoader"
 import { Safe3DPreview } from "./Safe3DPreview"
 import { formatPrice, formatInches } from "@/lib/display-format"
@@ -1357,14 +1356,6 @@ export function BookshelfConfigurator() {
 
   return (
     <>
-      <header className="flex min-h-16 items-center justify-between gap-4 border-b border-border bg-background px-4 py-2 sm:px-6">
-        <a href="https://www.perfectbookshelf.com" target="_top" aria-label="The Perfect Bookshelf home">
-          <img src={logoAsset.url} alt="The Perfect Bookshelf" className="h-12 w-auto" />
-        </a>
-        <Button asChild variant="ghost" className="shrink-0 text-sm">
-          <a href="https://www.perfectbookshelf.com" target="_top">← Back to shop</a>
-        </Button>
-      </header>
       <WizardShell
         preview={preview}
         steps={steps}
