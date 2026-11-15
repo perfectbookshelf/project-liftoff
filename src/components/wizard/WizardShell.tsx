@@ -95,7 +95,7 @@ export function WizardShell({
           {/* Pinned price/selection bar — stays at top of panel while step body scrolls */}
           <div className="flex-shrink-0 px-6 md:px-10 lg:px-12 pt-3 lg:pt-10 bg-background z-10">
             <div className="flex items-baseline justify-between gap-4 border-b border-border pb-2.5 lg:pb-4 min-h-[2rem] lg:min-h-[2.5rem]">
-              <span className="text-xs tracking-[0.2em] font-semibold uppercase text-foreground truncate">
+              <span className="text-xs tracking-[0.2em] font-semibold uppercase text-foreground min-w-0 break-words">
                 {step.selectionName ?? "—"}
               </span>
               <span className="text-xs tracking-wider font-medium text-foreground whitespace-nowrap">

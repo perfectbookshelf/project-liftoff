@@ -1,4 +1,5 @@
 // Builds the production-facing line-item properties for a Shopify order.
+import { lineItemTitle } from "./order-title"
 // Every product type writes all the geometry the workshop needs.
 
 type Shelf = { height: number; depth: number }
@@ -70,7 +71,7 @@ export function buildOrderProperties(config: any): { properties: Prop[]; summary
 
   return {
     properties: props,
-    title: `Custom ${typeLabel} - Configuration`,
+    title: lineItemTitle(config),
     summary: `${typeLabel} | ${config?.finish || "N/A"} | ${summary} x ${height ?? "?"}" H | ${count} shelves`,
   }
 }

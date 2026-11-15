@@ -5,6 +5,7 @@ import { useServerFn } from "@tanstack/react-start"
 import { renderPhotoreal } from "@/lib/render-photo.functions"
 import { PreviewLoader } from "./PreviewLoader"
 import { Safe3DPreview } from "./Safe3DPreview"
+import { designSizeLine } from "@/lib/order-title"
 import { formatPrice, formatInches } from "@/lib/display-format"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
@@ -1167,11 +1168,17 @@ export function BookshelfConfigurator() {
   }
 
 
+  const reviewSizeLine = `${designSizeLine({
+    mainType, width, width2, shelves, dimensions: { height: totalHeight },
+    uSurround: { w1: uW1, w: uW, w2: uW2 },
+    cathedral: { width: cathW, lowHeight: cathH, highHeight: cathH1 },
+  })}${finishOption?.label ? ` · ${finishOption.label}` : ""}`
+
   const reviewStep: WizardStep = {
     label: "Review",
-    selectionName: `${activeType.label} · ${finishOption?.label ?? ""}`,
+    selectionName: reviewSizeLine,
     priceDelta: result ? formatPrice(totalPrice) : "Calculating…",
-    description: "Review the configuration below. We'll generate a draft order in Shopify and take you to checkout.",
+    description: "Check your design, then continue to secure checkout.",
     hideNav: true,
     content: (
       <div className="space-y-8">
@@ -1221,6 +1228,7 @@ export function BookshelfConfigurator() {
             <span className="text-[11px] tracking-[0.3em] uppercase text-muted-foreground">Total</span>
             <span className="text-3xl font-display tracking-tight">{formatPrice(discountedTotal)}</span>
           </div>
+          <p className="text-xs text-muted-foreground text-right">Pay in full or over time with Shop Pay or Affirm.</p>
         </div>
 
         <CouponField
@@ -1259,6 +1267,10 @@ export function BookshelfConfigurator() {
             <ShoppingCart className="h-4 w-4" />
             {isAddingToCart ? "Processing…" : "Checkout"}
           </Button>
+          <p className="text-xs text-muted-foreground text-center">
+            Made to order. Free changes for 24 hours. See our{" "}
+            <a href="https://www.perfectbookshelf.com/policies/refund-policy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">return policy</a>.
+          </p>
           <Button
             type="button"
             variant="outline"
