@@ -2,6 +2,7 @@ import { formatPrice } from "@/lib/display-format"
 import { buildOrderProperties } from "@/lib/order-properties"
 import { createFileRoute } from "@tanstack/react-router"
 import { uploadDataUrlToShopifyFiles } from "@/lib/shopify-files.server"
+import { createQuoteProduct, deleteProduct, tagQuoteWithDraft } from "@/lib/shopify-quote-product.server"
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -50,13 +51,14 @@ export const Route = createFileRoute("/api/pbs-create-checkout")({
           const shelvesCount = config?.shelvesCount ?? shelves.length
 
           const { properties, title: orderTitle, summary: orderSummary } = buildOrderProperties(config)
-          if (cleanEmail) properties.push({ name: "Quote Email", value: cleanEmail })
+          if (cleanEmail) properties.push({ name: "_quote_email", value: cleanEmail })
 
           const shopName = normalizeShopifyStore(SHOPIFY_STORE)
 
           // Best-effort: upload preview + schematic so the customer sees them
           // in the invoice/checkout. Never block checkout if upload fails.
           const ts = Date.now()
+          let previewUrl: string | null = null
           if (typeof imageDataUrl === "string" && imageDataUrl.startsWith("data:")) {
             const url = await uploadDataUrlToShopifyFiles(
               shopName,
@@ -64,7 +66,7 @@ export const Route = createFileRoute("/api/pbs-create-checkout")({
               imageDataUrl,
               `pbs-preview-${ts}.png`,
             )
-            if (url) properties.push({ name: "Preview Image", value: url })
+            if (url) { previewUrl = url; properties.push({ name: "_preview_image", value: url }) }
           }
           if (typeof schematicDataUrl === "string" && schematicDataUrl.startsWith("data:")) {
             const url = await uploadDataUrlToShopifyFiles(
@@ -73,7 +75,7 @@ export const Route = createFileRoute("/api/pbs-create-checkout")({
               schematicDataUrl,
               `pbs-schematic-${ts}.png`,
             )
-            if (url) properties.push({ name: "Schematic", value: url })
+            if (url) properties.push({ name: "_schematic", value: url })
           }
 
           // Resolve coupon -> Shopify draft order discount
@@ -123,10 +125,16 @@ export const Route = createFileRoute("/api/pbs-create-checkout")({
             }
           }
 
+          // Hidden per-quote product so checkout shows the 3D render as the thumbnail.
+          // Falls back to a custom line item if anything fails. Set PBS_QUOTE_PRODUCTS=off to disable.
+          const quote = process.env.PBS_QUOTE_PRODUCTS === "off"
+            ? null
+            : await createQuoteProduct(shopName, SHOPIFY_ACCESS_TOKEN, { title: orderTitle, price: amount.toFixed(2), imageUrl: previewUrl })
+
           const buildPayload = (withEmail: boolean) => ({
             draft_order: {
               line_items: [
-                {
+                quote ? { variant_id: quote.variantId, quantity: 1, properties } : {
                   title: orderTitle,
                   quantity: 1,
                   price: amount.toFixed(2),
@@ -175,9 +183,11 @@ export const Route = createFileRoute("/api/pbs-create-checkout")({
 
           if (!createResponse.ok) {
             console.error("Shopify create error:", createJson)
+            if (quote) await deleteProduct(shopName, SHOPIFY_ACCESS_TOKEN, quote.productId)
             return Response.json({ error: "Error creating order", detail: createJson }, { status: 500, headers: corsHeaders })
           }
 
+          if (quote && createJson.draft_order?.id) await tagQuoteWithDraft(shopName, SHOPIFY_ACCESS_TOKEN, quote.productId, createJson.draft_order.id)
           const checkoutUrl = createJson.draft_order?.invoice_url
           if (checkoutUrl) {
             return Response.json({ checkoutUrl }, { headers: corsHeaders })
