@@ -1,4 +1,3 @@
-import { buildReturnPolicyRecord } from "@/lib/return-policy"
 import { formatPrice } from "@/lib/display-format"
 import { buildOrderProperties } from "@/lib/order-properties"
 import { createFileRoute } from "@tanstack/react-router"
@@ -26,12 +25,6 @@ export const Route = createFileRoute("/api/pbs-create-checkout")({
         try {
           const body = await request.json()
           const { price, config, imageDataUrl, schematicDataUrl, email, discountCode } = body
-          let policyRecord
-          try {
-            policyRecord = buildReturnPolicyRecord(body.returnPolicyAcceptance)
-          } catch {
-            return Response.json({ error: "Please read and agree to the Return Policy before checkout." }, { status: 400, headers: corsHeaders })
-          }
           const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
           const cleanEmail =
             typeof email === "string" && EMAIL_RE.test(email.trim()) && email.trim().length <= 255
@@ -144,8 +137,7 @@ export const Route = createFileRoute("/api/pbs-create-checkout")({
                   properties,
                 },
               ],
-              note: `PBS Configurator | ${orderSummary}${appliedDiscount ? ` | Coupon: ${cleanCode}` : ""} | ${policyRecord.note}`,
-              note_attributes: policyRecord.attributes,
+              note: `PBS Configurator | ${orderSummary}${appliedDiscount ? ` | Coupon: ${cleanCode}` : ""}`,
               use_customer_default_address: true,
               ...(appliedDiscount ? { applied_discount: appliedDiscount } : {}),
               // Attaching the email links the draft order to a customer so any
