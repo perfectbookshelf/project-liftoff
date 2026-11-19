@@ -50,8 +50,6 @@ export const Route = createRootRoute({
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://create-yours.perfectbookshelf.com/" },
       { name: "twitter:card", content: "summary_large_image" },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9cb593c8-bf52-403d-aa61-aaf64d265056/id-preview-6948177c--fbfb0bc5-6f44-4dcc-8e74-85731b03f64c.lovable.app-1778547201659.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9cb593c8-bf52-403d-aa61-aaf64d265056/id-preview-6948177c--fbfb0bc5-6f44-4dcc-8e74-85731b03f64c.lovable.app-1778547201659.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

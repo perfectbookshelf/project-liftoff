@@ -29,7 +29,54 @@ export interface Review {
   product?: string
 }
 
-export const REVIEWS: Review[] = []
+export const REVIEWS: Review[] = [
+  {
+    name: "Leslie S.",
+    location: "Raleigh, NC",
+    rating: 5,
+    text: "Fabulous shelf! So easy to put together! Looks stunning in my space!! Thank you!!!!",
+  },
+  {
+    name: "Christine D.",
+    rating: 5,
+    text: "10 years of not knowing what we were going to do with this wall... And thanks to you, we knew.",
+  },
+  {
+    name: "Andrea P.",
+    rating: 5,
+    text: "Two years ago we bought a bookcase from Perfect Bookshelf and we're very happy with the solution we've installed - we've just recommended two extra floors!",
+  },
+  {
+    name: "Caroline P.",
+    rating: 5,
+    text: "Assembly in 45 minutes without any difficulties or tools, as in the video on the website.",
+  },
+]
+
+export interface CustomerPhoto {
+  url: string
+  alt: string
+  caption: string
+}
+
+/** Real installation photography already published on the Perfect Bookshelf store. */
+export const CUSTOMER_PHOTOS: CustomerPhoto[] = [
+  {
+    url: "https://www.perfectbookshelf.com/cdn/shop/files/tpb-real-oak-stairs.jpg?v=1791245270&width=900",
+    alt: "Oak bookshelf wall beside a staircase and piano in a customer's home",
+    caption: "Oak · Customer home",
+  },
+  {
+    url: "https://www.perfectbookshelf.com/cdn/shop/files/tpb-real-corner-living.jpg?v=1791245270&width=900",
+    alt: "White and oak corner bookshelf in a customer's living room",
+    caption: "White + Oak · Customer home",
+  },
+  {
+    url: "https://www.perfectbookshelf.com/cdn/shop/files/tpb-real-oak-black-tv.jpg?v=1794205300&width=900",
+    alt: "Oak and black bookshelf wall around a TV in a customer's home",
+    caption: "Oak + Black · Customer home",
+  },
+]
 
 export interface ReviewSummary {
   average: number
@@ -38,7 +85,11 @@ export interface ReviewSummary {
   source: string
 }
 
-export const REVIEW_SUMMARY: ReviewSummary | null = null
+export const REVIEW_SUMMARY: ReviewSummary | null = {
+  average: 4.98,
+  count: 57,
+  source: "Perfect Bookshelf customer reviews",
+}
 
 export const MIN_REVIEWS_FOR_SUMMARY = 5
 

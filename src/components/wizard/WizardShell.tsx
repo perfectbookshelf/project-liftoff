@@ -146,7 +146,7 @@ export function WizardShell({
                 <Button
                   onClick={goNext}
                   disabled={safeIndex === total - 1 || (step.nextDisabled && !step.onNextBlocked)}
-                  aria-disabled={step.nextDisabled || undefined}
+                  aria-disabled={(step.nextDisabled && !step.onNextBlocked) || undefined}
                   className={cn(
                     "justify-self-end inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-4 sm:px-5 py-2.5 text-[11px] sm:text-xs tracking-[0.18em] font-semibold uppercase active:translate-y-px transition-colors disabled:opacity-30 disabled:cursor-not-allowed",
                     // Blocked-but-clickable (e.g. needs an email first) stays fully

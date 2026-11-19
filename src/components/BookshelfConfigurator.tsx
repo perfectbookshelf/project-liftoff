@@ -59,7 +59,7 @@ import { calculateUSurround } from "@/lib/usurround-calculator"
 import { cn } from "@/lib/utils"
 import { computeAreaSqFt, computePriceRange, formatUsd, type PriceRange } from "@/lib/pricing"
 import { track } from "@/lib/track"
-import { ReviewCards, ReviewSummaryLine, TrustList } from "./wizard/SocialProof"
+import { CustomerPhotos, ReviewCards, ReviewSummaryLine, TrustList } from "./wizard/SocialProof"
 
 /**
  * Show an estimated price range from Step 2 on, before the email gate.
@@ -587,6 +587,16 @@ export function BookshelfConfigurator() {
       skus: result.allSkus,
     }
 
+    // Record the checkout before navigation so quote follow-ups can exclude it.
+    if (isValidQuoteEmail) {
+      void captureQuoteLead({
+        email: quoteEmail,
+        productType: mainType,
+        stepReached: "checkout-clicked",
+        lastConfig: { ...config, price: Math.round(discountedTotal * 100) / 100 },
+      })
+    }
+
     try {
       const checkoutUrl = await createShopifyCheckout({ price: totalPrice.toFixed(2), config, imageDataUrl, schematicDataUrl, discountCode: appliedDiscount?.code, email: quoteEmail })
       const _pbsSet = (key: string, value: string) => {
@@ -671,11 +681,43 @@ export function BookshelfConfigurator() {
         : undefined,
   })
 
-  /* ─── "steps to price" hint (Step 1 only — no pricing shown on Steps 2–3) ─── */
+  // Save the final finish and price when the shopper reaches Review. The
+  // checkout handler updates the same lead again to prevent a follow-up.
+  useEffect(() => {
+    if (stepIndex !== 4 || !isValidQuoteEmail) return
+    void captureQuoteLead({
+      email: quoteEmail,
+      productType: mainType,
+      stepReached: "review",
+      lastConfig: {
+        ...quoteLeadConfig(),
+        finish: finishOption?.label ?? selectedFinish,
+        price: Math.round(discountedTotal * 100) / 100,
+      },
+    })
+    // Capture on entry to Review; later checkout captures the latest state.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stepIndex])
 
+  /* Step 1 sets expectations; Steps 2–3 show a real estimate before the email gate. */
   const priceNotice = (idx: number): React.ReactNode => {
     const left = PRICE_STEP_INDEX - idx
     if (left <= 0) return undefined
+    if (idx > 0 && priceRange) {
+      return (
+        <div className="border-y border-border py-3 space-y-1" data-testid="price-estimate">
+          <div className="flex items-baseline justify-between gap-3">
+            <span className="text-[11px] tracking-[0.15em] uppercase text-muted-foreground">Estimated price</span>
+            <span className="text-lg font-display text-foreground whitespace-nowrap">
+              {formatUsd(priceRange.low)} – {formatUsd(priceRange.high)}
+            </span>
+          </div>
+          <p className="text-[11px] text-muted-foreground leading-snug">
+            For this size across our available woods. Your exact price appears after you choose a finish.
+          </p>
+        </div>
+      )
+    }
     const stepsLeft = `${left} step${left > 1 ? "s" : ""}`
     return (
       <div className="text-[11px] tracking-[0.15em] uppercase text-muted-foreground" data-testid="price-steps-left">
@@ -838,6 +880,7 @@ export function BookshelfConfigurator() {
     progressLabel: "Size",
     selectionName: widthStepSelectionName,
     priceDelta: widthStepDelta,
+    notice: priceNotice(1),
     description:
       mainType === "corner"
         ? "Set both arms of the corner. The 3D preview updates live — adjust until it fits your wall."
@@ -934,6 +977,7 @@ export function BookshelfConfigurator() {
     label: "Shelves",
     selectionName: `${typePrefix}${visibleCount} ${shelvesStepUnit}`,
     priceDelta: `${toFraction(shelvesStepHeight)} tall`,
+    notice: priceNotice(2),
     description: shelvesStepDescription,
     nextLabel: "See Quote",
     nextDisabled: !isValidQuoteEmail,
@@ -1270,7 +1314,7 @@ export function BookshelfConfigurator() {
             {isAddingToCart ? "Processing…" : "Checkout"}
           </Button>
           <p className="text-xs text-muted-foreground text-center">
-            Made to order. Free changes for 24 hours. See our{" "}
+            Made to order. 5-year warranty. See our{" "}
             <a href="https://www.perfectbookshelf.com/policies/refund-policy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">return policy</a>.
           </p>
           <Button
@@ -1295,6 +1339,7 @@ export function BookshelfConfigurator() {
         <TrustList total={discountedTotal} />
 
         <ReviewCards />
+        <CustomerPhotos />
       </div>
     ),
   }
@@ -1372,6 +1417,7 @@ export function BookshelfConfigurator() {
       <QuoteEmailSheet
         open={emailSheetOpen}
         initialEmail={quoteEmail}
+        priceRangeLabel={priceRange ? `${formatUsd(priceRange.low)} – ${formatUsd(priceRange.high)}` : undefined}
         onClose={() => setEmailSheetOpen(false)}
         onSubmit={(email) => {
           setQuoteEmail(email)

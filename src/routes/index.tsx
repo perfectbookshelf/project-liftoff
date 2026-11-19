@@ -3,7 +3,7 @@ import { BookshelfConfigurator } from "@/components/BookshelfConfigurator"
 
 const TITLE = "Perfect-Bookshelf — Custom Bookshelf Designer"
 const DESCRIPTION =
-  "Design your own custom bookshelf, cathedral, portal, or U-surround in minutes. Pick wood, finish, and dimensions, then order made-to-measure."
+  "Design your own custom bookshelf, corner, cathedral, or U-surround in minutes. Pick wood, finish, and dimensions, then order made-to-measure."
 const URL = "https://create-yours.perfectbookshelf.com/"
 
 export const Route = createFileRoute("/")({

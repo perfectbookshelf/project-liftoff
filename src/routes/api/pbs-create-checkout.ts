@@ -190,6 +190,20 @@ export const Route = createFileRoute("/api/pbs-create-checkout")({
           if (quote && createJson.draft_order?.id) await tagQuoteWithDraft(shopName, SHOPIFY_ACCESS_TOKEN, quote.productId, createJson.draft_order.id)
           const checkoutUrl = createJson.draft_order?.invoice_url
           if (checkoutUrl) {
+            // Server-side source of truth for follow-up suppression: even if
+            // the browser's earlier beacon was blocked, this lead checked out.
+            if (cleanEmail) {
+              try {
+                const { supabaseAdmin } = await import("@/integrations/supabase/client.server")
+                const { error } = await supabaseAdmin
+                  .from("quote_leads")
+                  .update({ step_reached: "checkout-created", updated_at: new Date().toISOString() })
+                  .eq("email", cleanEmail)
+                if (error) console.warn("Could not mark quote lead as checked out:", error)
+              } catch (error) {
+                console.warn("Could not mark quote lead as checked out:", error)
+              }
+            }
             return Response.json({ checkoutUrl }, { headers: corsHeaders })
           }
 

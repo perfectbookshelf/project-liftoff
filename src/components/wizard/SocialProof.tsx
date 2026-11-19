@@ -1,9 +1,9 @@
 import * as React from "react"
-import { Star, Truck, Hammer, ShieldCheck, Lock } from "lucide-react"
+import { Star, Truck, ShieldCheck, Lock } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { formatPrice } from "@/lib/display-format"
 import {
-  photoReviews,
+  CUSTOMER_PHOTOS,
   REVIEWS,
   shortReviews,
   STORE_FACTS,
@@ -46,7 +46,7 @@ export function ReviewSummaryLine() {
       {summary && (
         <div className="flex items-center gap-2 text-[11px] tracking-[0.15em] uppercase text-foreground">
           <Stars rating={summary.average} />
-          <span className="font-semibold">{summary.average.toFixed(1)}</span>
+          <span className="font-semibold">{summary.average.toFixed(2)}</span>
           <span className="text-muted-foreground">
             · {summary.count} reviews
           </span>
@@ -74,11 +74,9 @@ export function EmailSheetReview() {
   )
 }
 
-/** Review step: up to 3 reviews, photo reviews first. */
+/** Review step: up to 3 verbatim customer reviews. */
 export function ReviewCards() {
-  const withPhoto = photoReviews()
-  const rest = REVIEWS.filter((r) => r.rating >= 4 && !withPhoto.includes(r))
-  const picks = [...withPhoto, ...rest].slice(0, 3)
+  const picks = REVIEWS.filter((r) => r.rating >= 4).slice(0, 3)
   if (picks.length === 0) return null
   return (
     <div className="space-y-3" data-testid="review-cards">
@@ -109,14 +107,41 @@ export function ReviewCards() {
   )
 }
 
-/** Review step, next to Checkout: delivery timeline and shipping, from the published policies. */
+/** Real installation photos, kept separate from reviews so neither implies a false attribution. */
+export function CustomerPhotos() {
+  if (CUSTOMER_PHOTOS.length === 0) return null
+  return (
+    <section className="space-y-3" aria-labelledby="customer-homes-title" data-testid="customer-photos">
+      <div className="text-[11px] tracking-[0.25em] uppercase text-muted-foreground" id="customer-homes-title">
+        Real customer homes
+      </div>
+      <div className="flex gap-3 overflow-x-auto pb-1 -mx-1 px-1 snap-x">
+        {CUSTOMER_PHOTOS.map((photo) => (
+          <figure key={photo.url} className="snap-start shrink-0 w-64">
+            <img
+              src={photo.url}
+              alt={photo.alt}
+              loading="lazy"
+              className="w-full aspect-[4/3] object-cover border border-border"
+            />
+            <figcaption className="mt-2 text-[11px] tracking-[0.12em] uppercase text-muted-foreground">
+              {photo.caption}
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+/** Review step reassurance: warranty, shipping and payment security. */
 export function TrustList({ total }: { total: number }) {
   const freeShipping = total >= STORE_FACTS.freeShippingThreshold
   const items: { icon: typeof Truck; title: string; detail: string }[] = [
     {
-      icon: Hammer,
-      title: `Made to order in ${STORE_FACTS.madeIn}`,
-      detail: `Ships in about ${STORE_FACTS.productionBusinessDays} business days, then ${STORE_FACTS.transitBusinessDays} business days in transit.`,
+      icon: ShieldCheck,
+      title: "5-year warranty",
+      detail: "Every made-to-measure bookshelf includes our 5-year warranty.",
     },
     freeShipping
       ? {
@@ -129,11 +154,6 @@ export function TrustList({ total }: { total: number }) {
           title: "Shipping calculated at checkout",
           detail: `Free ground shipping on orders over ${formatPrice(STORE_FACTS.freeShippingThreshold)} (${STORE_FACTS.freeShippingRegion}).`,
         },
-    {
-      icon: ShieldCheck,
-      title: "Changes free for 24 hours",
-      detail: "Cancel or adjust at no charge within 24 hours, before production starts.",
-    },
     {
       icon: Lock,
       title: "Secure checkout",

@@ -10,6 +10,7 @@ interface QuoteEmailSheetProps {
   open: boolean
   onClose: () => void
   initialEmail: string
+  priceRangeLabel?: string
   onSubmit: (email: string) => void
 }
 
@@ -32,7 +33,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
  * locks body scroll while open, traps initial focus on the input, closes on
  * Escape / backdrop tap, and never causes the underlying step panel to scroll.
  */
-export function QuoteEmailSheet({ open, onClose, initialEmail, onSubmit }: QuoteEmailSheetProps) {
+export function QuoteEmailSheet({ open, onClose, initialEmail, priceRangeLabel, onSubmit }: QuoteEmailSheetProps) {
   const [email, setEmail] = useState(initialEmail)
   const [touched, setTouched] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -135,6 +136,16 @@ export function QuoteEmailSheet({ open, onClose, initialEmail, onSubmit }: Quote
             <X className="h-4 w-4" />
           </button>
         </div>
+
+        {priceRangeLabel && (
+          <div className="mb-4 border-y border-border py-3" data-testid="email-price-range">
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="text-[11px] tracking-[0.15em] uppercase text-muted-foreground">Your estimated price</span>
+              <span className="text-xl font-display text-foreground whitespace-nowrap">{priceRangeLabel}</span>
+            </div>
+            <p className="mt-1 text-[11px] text-muted-foreground">Your exact price depends on the wood and finish you choose next.</p>
+          </div>
+        )}
 
         <EmailSheetReview />
 

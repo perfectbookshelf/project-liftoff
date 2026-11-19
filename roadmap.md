@@ -7,3 +7,11 @@
 - [x] 8 Loader until 3D canvas paints
 - [x] 9 Size summary line at top of review step
 - [x] Acceptance at 375px
+
+# Conversion improvements (2026-11-19)
+- [x] Show an estimated price range before the email request
+- [x] Replace delivery/24-hour-change reassurance with the 5-year warranty
+- [ ] Send follow-up email on saved quotes that do not check out — blocked on sender-domain setup; final design/price capture and checkout suppression are ready
+- [x] Skip the deposit option
+- [x] Add real customer reviews and installation photos to the final preview
+- [x] Verify the complete phone flow and publish-ready build
