@@ -24,6 +24,8 @@ export const FUNNEL_EVENTS = [
   "begin_checkout",
   "checkout_error",
   "book_consultation_click",
+  "talk_to_us_click",
+  "talk_to_us_sent",
 ] as const
 
 export type FunnelEventName = (typeof FUNNEL_EVENTS)[number]
@@ -50,6 +52,7 @@ const META_EVENT: Partial<Record<FunnelEventName, string>> = {
   generate_lead: "Lead",
   begin_checkout: "InitiateCheckout",
   book_consultation_click: "Contact",
+  talk_to_us_sent: "Contact",
 }
 
 function randomId(): string {

@@ -30,6 +30,7 @@ import { captureQuoteLead } from "@/lib/capture-lead"
 import { CouponField, type AppliedDiscount } from "./CouponField"
 import { WizardShell, SwatchGrid, Swatch, type WizardStep } from "./wizard/WizardShell"
 import { QuoteEmailSheet } from "./wizard/QuoteEmailSheet"
+import { TalkToUsSheet } from "./wizard/TalkToUsSheet"
 
 
 // Lazy-load heavy 3D views (three.js + @react-three/fiber + drei) so the
@@ -223,6 +224,7 @@ export function BookshelfConfigurator() {
 
   const [stepIndex, setStepIndex] = useState(0)
   const [quoteEmail, setQuoteEmailState] = useState<string>("")
+  const [talkOpen, setTalkOpen] = useState(false)
   const setQuoteEmail = (value: string) => {
     setQuoteEmailState(value)
     saveQuoteEmail(value)
@@ -1274,11 +1276,14 @@ export function BookshelfConfigurator() {
           <Button
             type="button"
             variant="outline"
-            onClick={() => openConsultation("configurator_step5")}
+            onClick={() => { setTalkOpen(true); track("talk_to_us_click", { product_type: mainType }) }}
             className="w-full h-12 px-8 rounded-none border border-foreground bg-background hover:bg-foreground hover:text-background text-foreground tracking-[0.2em] uppercase text-[11px] font-semibold transition-colors"
           >
-            Book a Free Consultation
+            Talk to us
           </Button>
+          <div className="text-center">
+            {consultationLink("configurator_step5", "Prefer a call? Book a free consultation →")}
+          </div>
           <button
             onClick={() => setStepIndex(stepIndex - 1)}
             className="self-start text-[11px] tracking-[0.2em] font-medium uppercase text-foreground hover:text-brand-walnut mt-1"
@@ -1353,6 +1358,16 @@ export function BookshelfConfigurator() {
         index={stepIndex}
         onIndexChange={(next) => setStepIndex(next > 2 && !isValidQuoteEmail ? Math.min(2, next) : next)}
         onReset={handleReset}
+      />
+      <TalkToUsSheet
+        open={talkOpen}
+        onClose={() => setTalkOpen(false)}
+        initialEmail={quoteEmail}
+        summary={reviewSizeLine}
+        productType={mainType}
+        price={discountedTotal}
+        config={{ ...quoteLeadConfig(), finish: finishOption?.label ?? selectedFinish, price: Math.round(discountedTotal * 100) / 100 }}
+        onSent={() => track("talk_to_us_sent", { product_type: mainType })}
       />
       <QuoteEmailSheet
         open={emailSheetOpen}

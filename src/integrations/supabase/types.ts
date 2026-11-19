@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      design_messages: {
+        Row: {
+          config: Json | null
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          phone: string | null
+          price: number | null
+          product_type: string | null
+        }
+        Insert: {
+          config?: Json | null
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          phone?: string | null
+          price?: number | null
+          product_type?: string | null
+        }
+        Update: {
+          config?: Json | null
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          phone?: string | null
+          price?: number | null
+          product_type?: string | null
+        }
+        Relationships: []
+      }
       funnel_events: {
         Row: {
           click_id_type: string | null
